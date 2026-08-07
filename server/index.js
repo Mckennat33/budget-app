@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import authRoutes from './auth.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const upload = multer({ dest: 'uploads/' });
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../dist')));
+app.use('/api/auth', authRoutes);
 
 app.post('/api/upload', upload.single('statement'), (req, res) => {
   if (!req.file) {

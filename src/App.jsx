@@ -5,7 +5,7 @@ import Categories from './pages/Categories';
 import Goals from './pages/Goals';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
-import Login from './pages/Login';
+import SignIn from './pages/SignIn';
 
 const pages = [
   { key: 'overview', label: 'Overview', component: <Overview /> },
@@ -19,9 +19,17 @@ const pages = [
 function App() {
   const [currentPage, setCurrentPage] = useState('overview');
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState('');
 
   if (!user) {
-    return <Login onLogin={(userData) => setUser(userData)} />;
+    return (
+      <SignIn
+        onLogin={({ email, token: authToken }) => {
+          setUser({ email });
+          setToken(authToken);
+        }}
+      />
+    );
   }
 
   const activePage = pages.find((page) => page.key === currentPage)?.component;
@@ -34,7 +42,13 @@ function App() {
             <h1>Budget App</h1>
             <p>Welcome back, {user.email}</p>
           </div>
-          <button className="logout-button" onClick={() => setUser(null)}>
+          <button
+            className="logout-button"
+            onClick={() => {
+              setUser(null);
+              setToken('');
+            }}
+          >
             Log out
           </button>
         </div>
