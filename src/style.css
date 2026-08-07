@@ -1,36 +1,130 @@
 .app-shell {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 32px;
   font-family: Inter, system-ui, sans-serif;
-  color: #1b1b1f;
+  color: #111827;
 }
 
 header {
-  text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
-.upload-card {
-  border: 1px solid #d7d7db;
-  background: #fff;
-  border-radius: 18px;
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 2.5vw, 2.5rem);
+}
+
+header p {
+  margin: 8px 0 0;
+  color: #4b5563;
+}
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.nav-item {
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  background: #f9fafb;
+  color: #1f2937;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.page-panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
   padding: 28px;
-  box-shadow: 0 10px 30px rgba(47, 72, 188, 0.08);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
 }
 
-.file-input-label {
-  display: inline-flex;
+.login-shell {
+  min-height: 100vh;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 18px;
-  padding: 14px 20px;
-  color: #fff;
-  background-color: #3b82f6;
-  border-radius: 999px;
+  background: #f3f4f6;
+  padding: 24px;
+}
+
+.login-card {
+  width: min(100%, 420px);
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.12);
+}
+
+.login-card h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.login-card p {
+  margin: 0 0 24px;
+  color: #4b5563;
+}
+
+.login-card form {
+  display: grid;
+  gap: 16px;
+}
+
+.login-card label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+.login-card button {
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.file-input-label input {
-  display: none;
+.logout-button {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #f3f4f6;
 }
