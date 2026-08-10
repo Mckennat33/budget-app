@@ -92,6 +92,74 @@ header p {
   color: #6b7280;
 }
 
+.overview-trend {
+  display: grid;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.trend-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.trend-description {
+  margin: 8px 0 0;
+  color: #6b7280;
+}
+
+.trend-summary {
+  color: #111827;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.trend-chart-card {
+  padding: 22px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+}
+
+.trend-chart-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.trend-grid-lines line {
+  stroke: #e5e7eb;
+  stroke-width: 1;
+}
+
+.trend-line {
+  stroke: #2563eb;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trend-point {
+  fill: #2563eb;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.trend-labels {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.trend-label {
+  text-align: center;
+}
+
 .overview-summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

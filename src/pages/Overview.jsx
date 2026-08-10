@@ -16,6 +16,23 @@ export default function Overview() {
     { name: 'Health & Fitness', amount: 0, change: 0 },
   ];
 
+  const trendData = [
+    { label: 'Mar', value: 0 },
+    { label: 'Apr', value: 0 },
+    { label: 'May', value: 0 },
+    { label: 'Jun', value: 0 },
+    { label: 'Jul', value: 0 },
+    { label: 'Aug', value: 0 },
+  ];
+
+  const trendValues = trendData.map((item) => item.value);
+  const maxTrendValue = Math.max(...trendValues, 1);
+  const chartWidth = 560;
+  const chartHeight = 140;
+  const pointX = (index) => (index / (trendData.length - 1)) * chartWidth;
+  const pointY = (value) => chartHeight - (value / maxTrendValue) * chartHeight;
+  const trendPoints = trendData.map((item, index) => `${pointX(index)},${pointY(item.value)}`);
+
   return (
     <div className="overview-page page-panel">
       <section className="overview-header">
@@ -23,6 +40,36 @@ export default function Overview() {
           <p className="overview-month">{monthLabel}</p>
           <h1>Monthly statement summary</h1>
           <p className="overview-date">{statementDate}</p>
+        </div>
+      </section>
+
+      <section className="overview-trend">
+        <div className="trend-title-row">
+          <div>
+            <div className="section-title">Spending trend</div>
+            <p className="trend-description">Last 6 months of account spending.</p>
+          </div>
+          <div className="trend-summary">Current trend is steady with no spending history.</div>
+        </div>
+
+        <div className="trend-chart-card">
+          <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="trend-chart-svg" aria-label="Spending trend chart">
+            <g className="trend-grid-lines">
+              {[0, 1, 2, 3].map((row) => {
+                const y = (row / 3) * chartHeight;
+                return <line key={row} x1={0} y1={y} x2={chartWidth} y2={y} />;
+              })}
+            </g>
+            <polyline points={trendPoints.join(' ')} className="trend-line" fill="none" />
+            {trendData.map((point, index) => (
+              <circle key={point.label} cx={pointX(index)} cy={pointY(point.value)} r="4" className="trend-point" />
+            ))}
+          </svg>
+          <div className="trend-labels">
+            {trendData.map((item) => (
+              <div key={item.label} className="trend-label">{item.label}</div>
+            ))}
+          </div>
         </div>
       </section>
 
