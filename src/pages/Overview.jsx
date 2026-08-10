@@ -1,29 +1,119 @@
-export default function Overview() {
-  const monthLabel = 'November 2026';
-  const statementDate = 'Statement prepared on Nov 1, 2026';
-  const spend = 0;
-  const spendChange = 0;
-  const income = 0;
-  const incomeChange = 0;
-  const categories = [
-    { name: 'Dining Takeout', amount: 0, change: 0 },
-    { name: 'Shopping', amount: 0, change: 0 },
-    { name: 'Other', amount: 0, change: 0 },
-    { name: 'Groceries', amount: 0, change: 0 },
-    { name: 'Transport', amount: 0, change: 0 },
-    { name: 'Subscriptions', amount: 0, change: 0 },
-    { name: 'Rent & Utilities', amount: 0, change: 0 },
-    { name: 'Health & Fitness', amount: 0, change: 0 },
-  ];
+import { useEffect, useRef, useState } from 'react';
 
-  const trendData = [
-    { label: 'Mar', value: 0 },
-    { label: 'Apr', value: 0 },
-    { label: 'May', value: 0 },
-    { label: 'Jun', value: 0 },
-    { label: 'Jul', value: 0 },
-    { label: 'Aug', value: 0 },
-  ];
+const defaultCategories = [
+  { name: 'Dining Takeout', amount: 0, change: 0 },
+  { name: 'Shopping', amount: 0, change: 0 },
+  { name: 'Other', amount: 0, change: 0 },
+  { name: 'Groceries', amount: 0, change: 0 },
+  { name: 'Transport', amount: 0, change: 0 },
+  { name: 'Subscriptions', amount: 0, change: 0 },
+  { name: 'Rent & Utilities', amount: 0, change: 0 },
+  { name: 'Health & Fitness', amount: 0, change: 0 },
+];
+
+const defaultTrendData = [
+  { label: 'Mar', value: 0 },
+  { label: 'Apr', value: 0 },
+  { label: 'May', value: 0 },
+  { label: 'Jun', value: 0 },
+  { label: 'Jul', value: 0 },
+  { label: 'Aug', value: 0 },
+];
+
+export default function Overview({ token }) {
+  const monthLabel = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+  const statementDate = `Statement prepared on ${new Date().toLocaleString('default', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  const [spend, setSpend] = useState(0);
+  const [spendChange, setSpendChange] = useState(0);
+  const [income, setIncome] = useState(0);
+  const [incomeChange, setIncomeChange] = useState(0);
+  const [categories, setCategories] = useState(defaultCategories);
+  const [trendData, setTrendData] = useState(defaultTrendData);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [error, setError] = useState('');
+  const fileInputRef = useRef(null);
+
+  const fetchOverview = async () => {
+    if (!token) return;
+    setLoading(true);
+    setError('');
+    setStatusMessage('');
+
+    try {
+      const response = await fetch('/api/overview', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to load overview data.');
+      }
+
+      setSpend(data.totalSpend ?? 0);
+      setIncome(data.totalIncome ?? 0);
+      setSpendChange(data.spendChange ?? 0);
+      setIncomeChange(data.incomeChange ?? 0);
+      setTrendData(Array.isArray(data.trendData) ? data.trendData : defaultTrendData);
+
+      const nextCategories = defaultCategories.map((category) => {
+        const found = Array.isArray(data.categories)
+          ? data.categories.find((item) => item.name === category.name)
+          : null;
+        return {
+          ...category,
+          amount: found?.amount ?? 0,
+          change: found?.change ?? 0,
+        };
+      });
+
+      setCategories(nextCategories);
+    } catch (fetchError) {
+      setError(fetchError.message || 'Unable to load overview data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchOverview();
+    }
+  }, [token]);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError('');
+    setStatusMessage('');
+
+    const formData = new FormData();
+    formData.append('statement', file);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed.');
+      }
+      setStatusMessage(`Uploaded ${data.count} transactions successfully.`);
+      await fetchOverview();
+    } catch (uploadError) {
+      setError(uploadError.message || 'Upload failed.');
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
+  };
 
   const trendValues = trendData.map((item) => item.value);
   const maxTrendValue = Math.max(...trendValues, 1);
@@ -41,7 +131,27 @@ export default function Overview() {
           <h1>Monthly statement summary</h1>
           <p className="overview-date">{statementDate}</p>
         </div>
+        <div className="overview-header-actions">
+          <input
+            type="file"
+            hidden
+            ref={fileInputRef}
+            accept=".csv,text/csv"
+            onChange={handleFileChange}
+          />
+          <button
+            type="button"
+            className="upload-button"
+            onClick={handleUploadClick}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading...' : 'Upload statement'}
+          </button>
+        </div>
       </section>
+
+      {error && <div className="overview-error">{error}</div>}
+      {statusMessage && <div className="overview-status">{statusMessage}</div>}
 
       <section className="overview-trend">
         <div className="trend-title-row">
@@ -49,7 +159,9 @@ export default function Overview() {
             <div className="section-title">Spending trend</div>
             <p className="trend-description">Last 6 months of account spending.</p>
           </div>
-          <div className="trend-summary">Current trend is steady with no spending history.</div>
+          <div className="trend-summary">
+            {loading ? 'Loading trend...' : 'Trend updated from your latest upload.'}
+          </div>
         </div>
 
         <div className="trend-chart-card">

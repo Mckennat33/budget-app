@@ -73,6 +73,45 @@ header p {
   padding-bottom: 24px;
 }
 
+.overview-header-actions {
+  display: grid;
+  align-items: center;
+}
+
+.upload-button {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.upload-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.overview-status,
+.overview-error {
+  border-radius: 16px;
+  padding: 16px 18px;
+  font-weight: 600;
+}
+
+.overview-status {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.overview-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
 .overview-month {
   margin: 0 0 8px;
   font-size: 0.95rem;

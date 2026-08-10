@@ -41,6 +41,16 @@ export async function ensureSchema() {
       name TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+
+    CREATE TABLE IF NOT EXISTS transactions (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      transaction_date DATE NOT NULL,
+      description TEXT,
+      amount NUMERIC NOT NULL,
+      category TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
 }
 

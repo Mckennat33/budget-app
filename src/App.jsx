@@ -15,7 +15,7 @@ function App() {
   const [isRegistering, setIsRegistering] = useState(false);
 
   const pages = [
-    { key: 'overview', label: 'Overview', component: <Overview /> },
+    { key: 'overview', label: 'Overview', component: <Overview token={token} /> },
     { key: 'transactions', label: 'Transactions', component: <Transactions /> },
     { key: 'categories', label: 'Categories', component: <Categories /> },
     { key: 'goals', label: 'Goals', component: <Goals /> },
