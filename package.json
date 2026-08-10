@@ -8,7 +8,8 @@
     "client": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "init-db": "node server/init-db.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
