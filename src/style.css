@@ -70,10 +70,94 @@ header p {
 
 .login-card {
   width: min(100%, 420px);
+  max-width: 100%;
+  box-sizing: border-box;
   background: #ffffff;
   border-radius: 22px;
-  padding: 32px;
+  padding: 24px;
   box-shadow: 0 18px 50px rgba(15, 23, 42, 0.12);
+}
+
+.auth-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.auth-tab {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-tab.active {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.auth-form h2 {
+  margin: 0;
+}
+
+.auth-form p {
+  margin: 0 0 16px;
+  color: #4b5563;
+}
+
+.auth-error {
+  padding: 12px 14px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 12px;
+}
+
+.auth-success {
+  padding: 12px 14px;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 12px;
+}
+
+.auth-form label,
+.login-card label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.auth-form input,
+.login-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.auth-form button,
+.login-card button {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .login-card h2 {
@@ -89,31 +173,20 @@ header p {
 .login-card form {
   display: grid;
   gap: 16px;
-}
-
-.login-card label {
-  display: grid;
-  gap: 8px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.login-card input {
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
-  font-size: 1rem;
 }
 
-.login-card button {
-  padding: 14px 16px;
-  border: none;
-  border-radius: 12px;
-  background: #3b82f6;
-  color: #ffffff;
-  font-weight: 700;
+.logout-button {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #111827;
   cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #f3f4f6;
 }
 
 .logout-button {

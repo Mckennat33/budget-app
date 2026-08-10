@@ -4,31 +4,54 @@ import Transactions from './pages/Transactions';
 import Categories from './pages/Categories';
 import Goals from './pages/Goals';
 import Reports from './pages/Reports';
-import Settings from './pages/Settings';
+import Account from './pages/Account';
 import SignIn from './pages/SignIn';
-
-const pages = [
-  { key: 'overview', label: 'Overview', component: <Overview /> },
-  { key: 'transactions', label: 'Transactions', component: <Transactions /> },
-  { key: 'categories', label: 'Categories', component: <Categories /> },
-  { key: 'goals', label: 'Goals', component: <Goals /> },
-  { key: 'reports', label: 'Reports', component: <Reports /> },
-  { key: 'settings', label: 'Settings', component: <Settings /> },
-];
+import SignUp from './pages/SignUp';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('overview');
   const [user, setUser] = useState(null);
   const [token, setToken] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const pages = [
+    { key: 'overview', label: 'Overview', component: <Overview /> },
+    { key: 'transactions', label: 'Transactions', component: <Transactions /> },
+    { key: 'categories', label: 'Categories', component: <Categories /> },
+    { key: 'goals', label: 'Goals', component: <Goals /> },
+    { key: 'reports', label: 'Reports', component: <Reports /> },
+    { key: 'settings', label: 'Account', component: <Account token={token} /> },
+  ];
 
   if (!user) {
+    const AuthForm = isRegistering ? SignUp : SignIn;
     return (
-      <SignIn
-        onLogin={({ email, token: authToken }) => {
-          setUser({ email });
-          setToken(authToken);
-        }}
-      />
+      <div className="login-shell">
+        <div className="login-card">
+          <div className="auth-toggle">
+            <button
+              type="button"
+              className={!isRegistering ? 'auth-tab active' : 'auth-tab'}
+              onClick={() => setIsRegistering(false)}
+            >
+              Sign in
+            </button>
+            <button
+              type="button"
+              className={isRegistering ? 'auth-tab active' : 'auth-tab'}
+              onClick={() => setIsRegistering(true)}
+            >
+              Sign up
+            </button>
+          </div>
+          <AuthForm
+            onLogin={({ email, name, token: authToken }) => {
+              setUser({ email, name });
+              setToken(authToken);
+            }}
+          />
+        </div>
+      </div>
     );
   }
 
@@ -40,7 +63,7 @@ function App() {
         <div className="brand-row">
           <div>
             <h1>Budget App</h1>
-            <p>Welcome back, {user.email}</p>
+            <p>Welcome back, {user.name || user.email}</p>
           </div>
           <button
             className="logout-button"

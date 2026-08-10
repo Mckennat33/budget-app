@@ -5,6 +5,8 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './auth.js';
+import { authMiddleware } from './authMiddleware.js';
+import { ensureSchema, initializeDb } from './db.js';
 
 dotenv.config();
 
@@ -19,12 +21,12 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use('/api/auth', authRoutes);
 
-app.post('/api/upload', upload.single('statement'), (req, res) => {
+app.post('/api/upload', authMiddleware, upload.single('statement'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
 
-  res.json({ message: 'Uploaded successfully', fileName: req.file.originalname });
+  res.json({ message: 'Uploaded successfully', fileName: req.file.originalname, user: req.user });
 });
 
 app.get('/api/health', (req, res) => {
@@ -32,6 +34,21 @@ app.get('/api/health', (req, res) => {
 });
 
 const port = process.env.PORT ?? 3000;
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
-});
+
+initializeDb()
+  .then(async (dbReady) => {
+    if (dbReady) {
+      await ensureSchema();
+      console.log('PostgreSQL database connected.');
+    } else {
+      console.log('PostgreSQL unavailable. Running with in-memory auth fallback.');
+    }
+
+    app.listen(port, () => {
+      console.log(`Server listening on http://localhost:${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Server startup failed:', error);
+    process.exit(1);
+  });

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function SignIn({ onLogin }) {
+export default function SignUp({ onLogin }) {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -11,30 +11,31 @@ export default function SignIn({ onLogin }) {
     setMessage('');
 
     const form = event.target;
+    const name = form.name.value.trim();
     const email = form.email.value.trim();
     const password = form.password.value.trim();
-    if (!email || !password) {
-      setError('Email and password are required.');
+    if (!name || !email || !password) {
+      setError('Name, email, and password are required.');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
       const data = await response.json();
       if (!response.ok) {
-        setError(data.error || 'Unable to sign in.');
+        setError(data.error || 'Unable to register.');
         return;
       }
 
-      setMessage('Signed in successfully.');
+      setMessage('Account created successfully.');
       onLogin({ email: data.user.email, name: data.user.name, token: data.token });
     } catch (err) {
-      setError('Network error: unable to sign in.');
+      setError('Network error: unable to register.');
     } finally {
       setLoading(false);
     }
@@ -42,10 +43,14 @@ export default function SignIn({ onLogin }) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      <h2>Sign in</h2>
-      <p>Use your account credentials to sign in.</p>
+      <h2>Create an account</h2>
+      <p>Register to use the budget app and start tracking your finances.</p>
       {error && <div className="auth-error">{error}</div>}
       {message && <div className="auth-success">{message}</div>}
+      <label>
+        Name
+        <input name="name" type="text" placeholder="Your name" required />
+      </label>
       <label>
         Email
         <input name="email" type="email" placeholder="you@example.com" required />
@@ -55,7 +60,7 @@ export default function SignIn({ onLogin }) {
         <input name="password" type="password" placeholder="••••••••" required />
       </label>
       <button type="submit" disabled={loading}>
-        {loading ? 'Signing in…' : 'Sign in'}
+        {loading ? 'Signing up…' : 'Sign up'}
       </button>
     </form>
   );
