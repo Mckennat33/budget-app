@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Overview from './pages/Overview';
 import Transactions from './pages/Transactions';
 import Categories from './pages/Categories';
@@ -11,8 +11,31 @@ import SignUp from './pages/SignUp';
 function App() {
   const [currentPage, setCurrentPage] = useState('overview');
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState(() => localStorage.getItem('authToken') || '');
   const [isRegistering, setIsRegistering] = useState(false);
+
+  useEffect(() => {
+    async function restoreUser() {
+      if (!token || user) return;
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+          localStorage.removeItem('authToken');
+          setToken('');
+          setUser(null);
+          return;
+        }
+        const data = await response.json();
+        setUser({ email: data.user.email, name: data.user.name });
+      } catch (error) {
+        console.error('Unable to restore user session:', error);
+      }
+    }
+
+    restoreUser();
+  }, [token, user]);
 
   const pages = [
     { key: 'overview', label: 'Overview', component: <Overview token={token} /> },
@@ -46,6 +69,7 @@ function App() {
           </div>
           <AuthForm
             onLogin={({ email, name, token: authToken }) => {
+              localStorage.setItem('authToken', authToken);
               setUser({ email, name });
               setToken(authToken);
             }}
@@ -68,6 +92,7 @@ function App() {
           <button
             className="logout-button"
             onClick={() => {
+              localStorage.removeItem('authToken');
               setUser(null);
               setToken('');
             }}

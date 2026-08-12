@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import multer from 'multer';
+import pdfParse from 'pdf-parse';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './auth.js';
@@ -44,6 +45,112 @@ function parseCsvLine(line) {
   return values;
 }
 
+function normalizeDate(rawDate) {
+  const cleaned = rawDate.replace(/\./g, '/').replace(/-/g, '/').trim();
+  const parts = cleaned.split('/').map((part) => part.trim());
+  if (parts.length === 3) {
+    let [a, b, c] = parts;
+    if (c.length === 2) c = `20${c}`;
+    // assume month/day/year unless month > 12
+    let month = a;
+    let day = b;
+    if (parseInt(month, 10) > 12) {
+      month = b;
+      day = a;
+    }
+    month = month.padStart(2, '0');
+    day = day.padStart(2, '0');
+    return `${c}-${month}-${day}`;
+  }
+
+  const parsed = new Date(cleaned);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
+}
+
+function normalizeAmount(rawAmount) {
+  let cleaned = rawAmount.replace(/[^0-9,\.\-()]/g, '').trim();
+  const negative = cleaned.includes('(') && cleaned.includes(')');
+  cleaned = cleaned.replace(/[()]/g, '');
+  cleaned = cleaned.replace(/,/g, '');
+  const value = parseFloat(cleaned);
+  if (Number.isNaN(value)) return null;
+  return negative ? -Math.abs(value) : value;
+}
+
+function guessCategory(description) {
+  const text = description.toLowerCase();
+  if (/groc|supermarket|whole foods|costco|walmart|aldi|trader joe|instacart|safeway|kroger|publix|sprouts/i.test(text)) {
+    return 'Groceries';
+  }
+  if (/uber|lyft|taxi|bus|train|divvy|transit|metro|tram/i.test(text)) {
+    return 'Transport';
+  }
+  if (/rent|mortgage|landlord|apartment|utility|electric|water|gas|internet|comcast|verizon|xfinity/i.test(text)) {
+    return 'Rent & Utilities';
+  }
+  if (/netflix|spotify|hulu|prime|amazon|subscription|subscription/i.test(text)) {
+    return 'Subscriptions';
+  }
+  if (/gym|fitness|health|doctor|hospital|medical|urgent care|rx|pharmacy/i.test(text)) {
+    return 'Health & Fitness';
+  }
+  if (/restaurant|dining|takeout|grubhub|doordash|ubereats|pizza|cafe|bar|starbucks|chipotle/i.test(text)) {
+    return 'Dining Takeout';
+  }
+  if (/mall|shop|target|amazon|walmart|best buy|apple|nordstrom|store|shopping/i.test(text)) {
+    return 'Shopping';
+  }
+  return 'Other';
+}
+
+function parsePdfTransactions(pdfText) {
+  const lines = pdfText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  const transactions = [];
+  const dateRegex = /(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})/;
+  const amountRegex = /-?\(?\$?[\d,]+\.\d{2}\)?/g;
+
+  for (const line of lines) {
+    const dateMatch = line.match(dateRegex);
+    const amountMatches = Array.from(line.matchAll(amountRegex)).map((match) => match[0]);
+    if (!dateMatch || amountMatches.length === 0) continue;
+
+    const rawDate = dateMatch[1];
+    const parsedDate = normalizeDate(rawDate);
+    if (!parsedDate) continue;
+
+    const rawAmount = amountMatches[amountMatches.length - 1];
+    const amount = normalizeAmount(rawAmount);
+    if (amount === null) continue;
+
+    const amountIndex = line.lastIndexOf(rawAmount);
+    const description = line.slice(dateMatch.index + rawDate.length, amountIndex).trim() || 'Bank transaction';
+    const category = guessCategory(description);
+
+    transactions.push({
+      date: parsedDate,
+      description,
+      amount,
+      category,
+    });
+  }
+
+  return transactions;
+}
+
+function isPdfFile(file) {
+  const filename = file.originalname.toLowerCase();
+  return file.mimetype === 'application/pdf' || filename.endsWith('.pdf');
+}
+
+function isCsvFile(file) {
+  const filename = file.originalname.toLowerCase();
+  return file.mimetype === 'text/csv' || filename.endsWith('.csv');
+}
+
 app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
@@ -54,49 +161,71 @@ app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, 
   }
 
   try {
-    const contents = await fs.readFile(req.file.path, 'utf8');
+    let transactions = [];
+    const fileLower = req.file.originalname.toLowerCase();
+    const isPdf = isPdfFile(req.file);
+    const isCsv = isCsvFile(req.file);
+
+    if (!isPdf && !isCsv) {
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(400).json({ error: 'Unsupported file type. Upload a CSV or PDF statement.' });
+    }
+
+    if (isPdf) {
+      try {
+        const buffer = await fs.readFile(req.file.path);
+        const parsed = await pdfParse(buffer);
+        const pdfText = parsed.text || '';
+        transactions = parsePdfTransactions(pdfText);
+      } catch (parseError) {
+        await fs.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ error: 'Invalid PDF file. Upload a valid bank statement PDF.' });
+      }
+    } else {
+      const contents = await fs.readFile(req.file.path, 'utf8');
+      const lines = contents.split(/\r?\n/).filter((line) => line.trim());
+      if (lines.length < 2) {
+        await fs.unlink(req.file.path).catch(() => {});
+        return res.status(400).json({ error: 'Statement file contains no transactions.' });
+      }
+
+      const header = parseCsvLine(lines.shift());
+      const normalizedHeader = header.map((cell) => cell.toLowerCase().trim());
+      const dateIndex = normalizedHeader.indexOf('date');
+      const descriptionIndex = normalizedHeader.indexOf('description');
+      const amountIndex = normalizedHeader.indexOf('amount');
+      const categoryIndex = normalizedHeader.indexOf('category');
+
+      if (dateIndex === -1 || amountIndex === -1 || categoryIndex === -1) {
+        return res.status(400).json({
+          error: 'CSV must include at least date, amount, and category columns.',
+        });
+      }
+
+      for (const line of lines) {
+        const cells = parseCsvLine(line);
+        const rawDate = cells[dateIndex];
+        const rawAmount = cells[amountIndex];
+        const rawCategory = cells[categoryIndex] || 'Other';
+        const description = descriptionIndex !== -1 ? cells[descriptionIndex] || '' : '';
+
+        if (!rawDate || !rawAmount) continue;
+        const amount = normalizeAmount(rawAmount);
+        if (amount === null) continue;
+
+        transactions.push({
+          date: rawDate,
+          description,
+          amount,
+          category: rawCategory || 'Other',
+        });
+      }
+    }
+
     await fs.unlink(req.file.path).catch(() => {});
 
-    const lines = contents.split(/\r?\n/).filter((line) => line.trim());
-    if (lines.length < 2) {
-      return res.status(400).json({ error: 'Statement file contains no transactions.' });
-    }
-
-    const header = parseCsvLine(lines.shift());
-    const normalizedHeader = header.map((cell) => cell.toLowerCase().trim());
-    const dateIndex = normalizedHeader.indexOf('date');
-    const descriptionIndex = normalizedHeader.indexOf('description');
-    const amountIndex = normalizedHeader.indexOf('amount');
-    const categoryIndex = normalizedHeader.indexOf('category');
-
-    if (dateIndex === -1 || amountIndex === -1 || categoryIndex === -1) {
-      return res.status(400).json({
-        error: 'CSV must include at least date, amount, and category columns.',
-      });
-    }
-
-    const transactions = [];
-    for (const line of lines) {
-      const cells = parseCsvLine(line);
-      const rawDate = cells[dateIndex];
-      const rawAmount = cells[amountIndex];
-      const rawCategory = cells[categoryIndex] || 'Other';
-      const description = descriptionIndex !== -1 ? cells[descriptionIndex] || '' : '';
-
-      if (!rawDate || !rawAmount) continue;
-      const amount = parseFloat(rawAmount.replace(/[^0-9.-]/g, ''));
-      if (Number.isNaN(amount)) continue;
-
-      transactions.push({
-        date: rawDate,
-        description,
-        amount,
-        category: rawCategory || 'Other',
-      });
-    }
-
     if (transactions.length === 0) {
-      return res.status(400).json({ error: 'No valid transactions were found in the statement.' });
+      return res.status(400).json({ error: isPdf ? 'Invalid PDF statement. No transactions could be parsed.' : 'No valid transactions were found in the statement.' });
     }
 
     await query('BEGIN');

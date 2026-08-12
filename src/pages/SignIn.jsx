@@ -1,5 +1,14 @@
 import { useState } from 'react';
 
+async function parseApiResponse(response) {
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return response.json();
+  }
+  const text = await response.text();
+  return { error: text || response.statusText || 'Unknown server error.' };
+}
+
 export default function SignIn({ onLogin }) {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -25,16 +34,17 @@ export default function SignIn({ onLogin }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await response.json();
+      const data = await parseApiResponse(response);
       if (!response.ok) {
-        setError(data.error || 'Unable to sign in.');
+        setError(data.error || 'Unable to sign in. Please check your credentials and try again.');
         return;
       }
 
       setMessage('Signed in successfully.');
       onLogin({ email: data.user.email, name: data.user.name, token: data.token });
     } catch (err) {
-      setError('Network error: unable to sign in.');
+      setError('Unable to connect to the authentication service. Please make sure the server is running and try again.');
+      console.error('Sign in error:', err);
     } finally {
       setLoading(false);
     }

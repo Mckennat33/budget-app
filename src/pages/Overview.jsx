@@ -88,6 +88,19 @@ export default function Overview({ token }) {
   const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    const allowedTypes = ['application/pdf', 'text/csv'];
+    const allowedExtensions = ['.pdf', '.csv'];
+    const filename = file.name.toLowerCase();
+    const hasValidType = allowedTypes.includes(file.type);
+    const hasValidExtension = allowedExtensions.some((ext) => filename.endsWith(ext));
+
+    if (!hasValidType && !hasValidExtension) {
+      setError('Unsupported file type. Please upload a PDF or CSV statement.');
+      event.target.value = '';
+      return;
+    }
+
     setUploading(true);
     setError('');
     setStatusMessage('');
@@ -136,7 +149,7 @@ export default function Overview({ token }) {
             type="file"
             hidden
             ref={fileInputRef}
-            accept=".csv,text/csv"
+            accept=".csv,text/csv,application/pdf,.pdf"
             onChange={handleFileChange}
           />
           <button

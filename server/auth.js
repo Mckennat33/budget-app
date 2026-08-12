@@ -80,10 +80,11 @@ router.post('/register', async (req, res) => {
     const token = jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
     return res.json({ token, user });
   } catch (error) {
+    console.error('Register error:', error);
     if (error.code === '23505') {
       return res.status(409).json({ error: 'Email is already registered.' });
     }
-    return res.status(500).json({ error: 'Unable to create account.' });
+    return res.status(500).json({ error: 'Unable to create account at this time. Please try again later.' });
   }
 });
 
@@ -107,7 +108,8 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
     return res.json({ token, user: { email: user.email, name: user.name } });
   } catch (error) {
-    return res.status(500).json({ error: 'Unable to sign in.' });
+    console.error('Login error:', error);
+    return res.status(500).json({ error: 'Unable to sign in at this time. Please try again later.' });
   }
 });
 
