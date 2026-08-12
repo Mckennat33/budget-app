@@ -3,12 +3,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import multer from 'multer';
-import pdfParse from 'pdf-parse';
+import { PDFParse } from 'pdf-parse';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './auth.js';
 import { authMiddleware } from './authMiddleware.js';
-import { ensureSchema, initializeDb, query } from './db.js';
+import { ensureSchema, initializeDb, query, dbAvailable } from './db.js';
 
 dotenv.config();
 
@@ -45,22 +45,45 @@ function parseCsvLine(line) {
   return values;
 }
 
-function normalizeDate(rawDate) {
-  const cleaned = rawDate.replace(/\./g, '/').replace(/-/g, '/').trim();
-  const parts = cleaned.split('/').map((part) => part.trim());
-  if (parts.length === 3) {
-    let [a, b, c] = parts;
+function normalizeDate(rawDate, fallbackYear = new Date().getFullYear()) {
+  let cleaned = rawDate
+    .replace(/\./g, '/')
+    .replace(/-/g, '/')
+    .replace(/(st|nd|rd|th)/gi, '')
+    .trim();
+
+  const numericDateMatch = cleaned.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+  if (numericDateMatch) {
+    let [, a, b, c] = numericDateMatch;
+    if (!c) c = `${fallbackYear}`;
     if (c.length === 2) c = `20${c}`;
-    // assume month/day/year unless month > 12
     let month = a;
     let day = b;
     if (parseInt(month, 10) > 12) {
       month = b;
       day = a;
     }
+    // sanity check — reject impossible month/day combos (prevents parsing amounts like 02.67 as dates)
+    const m = parseInt(month, 10);
+    const d = parseInt(day, 10);
+    if (Number.isNaN(m) || Number.isNaN(d) || m < 1 || m > 12 || d < 1 || d > 31) {
+      return null;
+    }
     month = month.padStart(2, '0');
     day = day.padStart(2, '0');
     return `${c}-${month}-${day}`;
+  }
+
+  const monthNameDateMatch = cleaned.match(/^([A-Za-z]{3,9})\s+(\d{1,2}),?\s+(\d{4})$/);
+  if (monthNameDateMatch) {
+    const parsed = new Date(cleaned);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
+  }
+
+  const dayMonthNameDateMatch = cleaned.match(/^(\d{1,2})\s+([A-Za-z]{3,9})\s+(\d{4})$/);
+  if (dayMonthNameDateMatch) {
+    const parsed = new Date(cleaned);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
   }
 
   const parsed = new Date(cleaned);
@@ -103,42 +126,113 @@ function guessCategory(description) {
   return 'Other';
 }
 
-function parsePdfTransactions(pdfText) {
-  const lines = pdfText
+function extractFallbackYear(pdfText) {
+  const headerPatterns = [
+    /(?:through|ending|statement date|as of|period ending|statement ending)\s+(?:[A-Za-z]{3,9}\s+\d{1,2},?\s*|\d{1,2}[\/\-.]\d{1,2}[\/\-.])?(\d{4})/i,
+    /statement period[^\n]*?(\d{4})/i,
+    /for the period[^\n]*?(\d{4})/i,
+    /closing date[^\n]*?(\d{4})/i,
+  ];
+
+  for (const pattern of headerPatterns) {
+    const match = pdfText.match(pattern);
+    if (match) {
+      const year = parseInt(match[1], 10);
+      if (!Number.isNaN(year)) {
+        return year;
+      }
+    }
+  }
+
+  const firstLines = pdfText
     .split(/\r?\n/)
+    .slice(0, 20)
     .map((line) => line.trim())
+    .filter(Boolean);
+
+  for (const line of firstLines) {
+    const yearMatch = line.match(/\b(20\d{2}|19\d{2})\b/);
+    if (yearMatch) {
+      const year = parseInt(yearMatch[1], 10);
+      if (!Number.isNaN(year)) {
+        return year;
+      }
+    }
+  }
+
+  return new Date().getFullYear();
+}
+
+function parsePdfTransactions(pdfText) {
+  const rawLines = pdfText
+    .replace(/\u00A0/g, ' ')
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\s{2,}/g, ' ').trim())
     .filter((line) => line.length > 0);
 
   const transactions = [];
-  const dateRegex = /(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})/;
+  const debugLines = [];
+  const fallbackYear = extractFallbackYear(pdfText);
+  const dateRegex = /(\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?|[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})/;
   const amountRegex = /-?\(?\$?[\d,]+\.\d{2}\)?/g;
+  let lastTransaction = null;
 
-  for (const line of lines) {
+  for (const line of rawLines) {
+    const lowerLine = line.toLowerCase();
+    if (/^(date|transaction date|description|amount|balance|type|memo|posting date)\b/.test(lowerLine)) {
+      continue;
+    }
+
     const dateMatch = line.match(dateRegex);
     const amountMatches = Array.from(line.matchAll(amountRegex)).map((match) => match[0]);
-    if (!dateMatch || amountMatches.length === 0) continue;
 
-    const rawDate = dateMatch[1];
-    const parsedDate = normalizeDate(rawDate);
-    if (!parsedDate) continue;
+    if (dateMatch && amountMatches.length > 0) {
+      const rawDate = dateMatch[1];
+      const parsedDate = normalizeDate(rawDate, fallbackYear);
+      if (!parsedDate) {
+        debugLines.push({ line, reason: 'invalid date format', rawDate });
+        continue;
+      }
 
-    const rawAmount = amountMatches[amountMatches.length - 1];
-    const amount = normalizeAmount(rawAmount);
-    if (amount === null) continue;
+      const rawAmount = amountMatches[amountMatches.length - 1];
+      const amount = normalizeAmount(rawAmount);
+      if (amount === null) {
+        debugLines.push({ line, reason: 'invalid amount', rawAmount });
+        continue;
+      }
 
-    const amountIndex = line.lastIndexOf(rawAmount);
-    const description = line.slice(dateMatch.index + rawDate.length, amountIndex).trim() || 'Bank transaction';
-    const category = guessCategory(description);
+      const amountIndex = line.lastIndexOf(rawAmount);
+      let description = line.slice(dateMatch.index + rawDate.length, amountIndex).trim();
+      description = description.replace(/\b(debit|credit|pending|available|balance|automatic transfer|auto transfer)\b/gi, '').replace(/\s{2,}/g, ' ').trim();
 
-    transactions.push({
-      date: parsedDate,
-      description,
-      amount,
-      category,
-    });
+      if (!description) {
+        const trailingText = line.slice(amountIndex + rawAmount.length).trim();
+        description = trailingText || 'Bank transaction';
+      }
+
+      const category = guessCategory(description || 'Bank transaction');
+      const transaction = {
+        date: parsedDate,
+        description: description || 'Bank transaction',
+        amount,
+        category,
+      };
+      transactions.push(transaction);
+      lastTransaction = transaction;
+      continue;
+    }
+
+    if (!dateMatch && amountMatches.length === 0 && lastTransaction && /[A-Za-z]/.test(line)) {
+      lastTransaction.description = `${lastTransaction.description} ${line}`.replace(/\s{2,}/g, ' ').trim();
+      continue;
+    }
+
+    if (line.trim().length > 0) {
+      debugLines.push({ line, reason: 'unrecognized format' });
+    }
   }
 
-  return transactions;
+  return { transactions, debugLines, totalLines: rawLines.length };
 }
 
 function isPdfFile(file) {
@@ -156,7 +250,7 @@ app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, 
     return res.status(400).json({ error: 'No file uploaded' });
   }
 
-  if (!query) {
+  if (!dbAvailable) {
     return res.status(503).json({ error: 'Database unavailable.' });
   }
 
@@ -172,14 +266,30 @@ app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, 
     }
 
     if (isPdf) {
+      let pdfDebug = { debugLines: [], totalLines: 0 };
       try {
         const buffer = await fs.readFile(req.file.path);
-        const parsed = await pdfParse(buffer);
-        const pdfText = parsed.text || '';
-        transactions = parsePdfTransactions(pdfText);
+        const parser = new PDFParse({ data: buffer });
+        const parsed = await parser.getText();
+        if (typeof parser.destroy === 'function') {
+          await parser.destroy();
+        }
+        const pdfText = typeof parsed === 'string' ? parsed : parsed.text || '';
+        const parsedResult = parsePdfTransactions(pdfText);
+        transactions = parsedResult.transactions;
+        pdfDebug = {
+          debugLines: parsedResult.debugLines.slice(0, 20),
+          totalLines: parsedResult.totalLines,
+          parsedCount: parsedResult.transactions.length,
+        };
       } catch (parseError) {
         await fs.unlink(req.file.path).catch(() => {});
+        console.log('PDF parse error:', parseError);
         return res.status(400).json({ error: 'Invalid PDF file. Upload a valid bank statement PDF.' });
+      }
+
+      if (transactions.length === 0) {
+        console.log('PDF parse debug:', pdfDebug);
       }
     } else {
       const contents = await fs.readFile(req.file.path, 'utf8');
@@ -225,7 +335,15 @@ app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, 
     await fs.unlink(req.file.path).catch(() => {});
 
     if (transactions.length === 0) {
-      return res.status(400).json({ error: isPdf ? 'Invalid PDF statement. No transactions could be parsed.' : 'No valid transactions were found in the statement.' });
+      const response = { error: isPdf ? 'Invalid PDF statement. No transactions could be parsed.' : 'No valid transactions were found in the statement.' };
+      if (isPdf && typeof pdfDebug !== 'undefined') {
+        response.debug = {
+          totalLines: pdfDebug.totalLines,
+          parsedCount: pdfDebug.parsedCount,
+          failedLines: pdfDebug.debugLines,
+        };
+      }
+      return res.status(400).json(response);
     }
 
     await query('BEGIN');
@@ -244,7 +362,7 @@ app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, 
 });
 
 app.get('/api/overview', authMiddleware, async (req, res) => {
-  if (!query) {
+  if (!dbAvailable) {
     return res.status(503).json({ error: 'Database unavailable.' });
   }
 
@@ -342,6 +460,112 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Overview fetch failed:', error);
     return res.status(500).json({ error: 'Unable to load overview data.' });
+  }
+});
+
+// Dev-only overview for user 1 (helps debugging frontend without auth).
+app.get('/api/overview/debug', async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  if (!dbAvailable) {
+    return res.status(503).json({ error: 'Database unavailable.' });
+  }
+
+  try {
+    const userId = 1;
+    const months = [];
+    const now = new Date();
+    for (let index = 5; index >= 0; index -= 1) {
+      const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
+      const label = date.toLocaleString('default', { month: 'short' });
+      months.push({ label, start: date.toISOString().slice(0, 10), value: 0 });
+    }
+
+    const trendRows = await query(
+      `SELECT date_trunc('month', transaction_date) AS month_start,
+              SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend
+         FROM transactions
+        WHERE user_id = $1
+          AND transaction_date >= date_trunc('month', current_date) - INTERVAL '5 months'
+        GROUP BY month_start
+        ORDER BY month_start`,
+      [userId]
+    );
+
+    const trendMap = new Map(trendRows.rows.map((row) => [row.month_start.toISOString().slice(0, 10), Number(row.spend || 0)]));
+    const trendData = months.map((month) => ({ label: month.label, value: trendMap.get(month.start) || 0 }));
+
+    const totalsRow = await query(
+      `SELECT
+         SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
+         SUM(amount) FILTER (WHERE amount > 0) AS income
+       FROM transactions
+      WHERE user_id = $1
+        AND date_trunc('month', transaction_date) = date_trunc('month', current_date)`,
+      [userId]
+    );
+    const totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+
+    const prevRow = await query(
+      `SELECT
+         SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
+         SUM(amount) FILTER (WHERE amount > 0) AS income
+       FROM transactions
+      WHERE user_id = $1
+        AND date_trunc('month', transaction_date) = date_trunc('month', current_date - INTERVAL '1 month')`,
+      [userId]
+    );
+    const prevTotals = prevRow.rows[0] || { spend: 0, income: 0 };
+
+    const calcChange = (current, previous) => {
+      if (!previous || previous === 0) {
+        return current === 0 ? 0 : 100;
+      }
+      return Math.round(((current - previous) / Math.abs(previous)) * 100);
+    };
+
+    const categoriesRows = await query(
+      `SELECT category, SUM(amount) * -1 AS spend
+       FROM transactions
+      WHERE user_id = $1
+        AND date_trunc('month', transaction_date) = date_trunc('month', current_date)
+        AND amount < 0
+      GROUP BY category
+      ORDER BY spend DESC`,
+      [userId]
+    );
+
+    const requestedCategories = [
+      'Dining Takeout',
+      'Shopping',
+      'Other',
+      'Groceries',
+      'Transport',
+      'Subscriptions',
+      'Rent & Utilities',
+      'Health & Fitness',
+    ];
+
+    const categoryMap = new Map(categoriesRows.rows.map((row) => [row.category, Number(row.spend || 0)]));
+    const categories = requestedCategories.map((name) => ({
+      name,
+      amount: categoryMap.get(name) || 0,
+      change: 0,
+    }));
+
+    return res.json({
+      totalSpend: Number(totals.spend || 0),
+      totalIncome: Number(totals.income || 0),
+      spendChange: calcChange(Number(totals.spend || 0), Number(prevTotals.spend || 0)),
+      incomeChange: calcChange(Number(totals.income || 0), Number(prevTotals.income || 0)),
+      trendData,
+      categories,
+    });
+  } catch (error) {
+    console.error('Debug overview fetch failed:', error);
+    return res.status(500).json({ error: 'Unable to load debug overview data.' });
   }
 });
 

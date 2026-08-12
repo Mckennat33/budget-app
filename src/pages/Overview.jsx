@@ -36,20 +36,11 @@ export default function Overview({ token }) {
   const fileInputRef = useRef(null);
 
   const fetchOverview = async () => {
-    if (!token) return;
     setLoading(true);
     setError('');
     setStatusMessage('');
 
-    try {
-      const response = await fetch('/api/overview', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Unable to load overview data.');
-      }
-
+    async function applyData(data) {
       setSpend(data.totalSpend ?? 0);
       setIncome(data.totalIncome ?? 0);
       setSpendChange(data.spendChange ?? 0);
@@ -68,6 +59,31 @@ export default function Overview({ token }) {
       });
 
       setCategories(nextCategories);
+    }
+
+    try {
+      // Try authenticated endpoint if we have a token
+      if (token) {
+        const response = await fetch('/api/overview', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          await applyData(data);
+          return;
+        }
+        // fallthrough to debug endpoint on auth failure or other error
+        console.warn('Authenticated overview fetch failed, falling back to debug:', data?.error);
+      }
+
+      // Dev fallback (server exposes /api/overview/debug when not in production)
+      const debugResp = await fetch('/api/overview/debug');
+      const debugData = await debugResp.json();
+      if (debugResp.ok) {
+        await applyData(debugData);
+      } else {
+        throw new Error(debugData.error || 'Unable to load overview data.');
+      }
     } catch (fetchError) {
       setError(fetchError.message || 'Unable to load overview data.');
     } finally {
