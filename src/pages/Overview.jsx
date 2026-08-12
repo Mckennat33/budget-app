@@ -29,6 +29,9 @@ export default function Overview({ token }) {
   const [incomeChange, setIncomeChange] = useState(0);
   const [categories, setCategories] = useState(defaultCategories);
   const [trendData, setTrendData] = useState(defaultTrendData);
+  const [monthOptions, setMonthOptions] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [showAll, setShowAll] = useState(true);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -59,12 +62,24 @@ export default function Overview({ token }) {
       });
 
       setCategories(nextCategories);
+      if (Array.isArray(data.monthOptions)) {
+        setMonthOptions(data.monthOptions);
+        if (!selectedMonth && data.anchorMonth) {
+          setSelectedMonth(data.anchorMonth.slice(0, 7));
+        }
+      }
     }
 
     try {
       // Try authenticated endpoint if we have a token
+      // build query params: prefer all=true for quick verification, otherwise use selectedMonth
+      const params = new URLSearchParams();
+      if (showAll) params.set('all', 'true');
+      else if (selectedMonth) params.set('month', selectedMonth);
+
+      // Try authenticated endpoint if we have a token
       if (token) {
-        const response = await fetch('/api/overview', {
+        const response = await fetch(`/api/overview?${params.toString()}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
@@ -72,12 +87,11 @@ export default function Overview({ token }) {
           await applyData(data);
           return;
         }
-        // fallthrough to debug endpoint on auth failure or other error
         console.warn('Authenticated overview fetch failed, falling back to debug:', data?.error);
       }
 
       // Dev fallback (server exposes /api/overview/debug when not in production)
-      const debugResp = await fetch('/api/overview/debug');
+      const debugResp = await fetch(`/api/overview/debug?${params.toString()}`);
       const debugData = await debugResp.json();
       if (debugResp.ok) {
         await applyData(debugData);
@@ -92,10 +106,13 @@ export default function Overview({ token }) {
   };
 
   useEffect(() => {
-    if (token) {
-      fetchOverview();
-    }
+    fetchOverview();
   }, [token]);
+
+  useEffect(() => {
+    // refetch when user toggles all/month selection
+    fetchOverview();
+  }, [showAll, selectedMonth]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -168,7 +185,21 @@ export default function Overview({ token }) {
             accept=".csv,text/csv,application/pdf,.pdf"
             onChange={handleFileChange}
           />
-          <button
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <select
+              value={selectedMonth}
+              onChange={(e) => { setSelectedMonth(e.target.value); setShowAll(false); }}
+              style={{ padding: '6px 8px' }}
+            >
+              <option value="">Select month</option>
+              {monthOptions.map((m) => (
+                <option key={m.start} value={m.start.slice(0, 7)}>{m.label} {m.start.slice(0, 4)}</option>
+              ))}
+            </select>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> All time
+            </label>
+            <button
             type="button"
             className="upload-button"
             onClick={handleUploadClick}
@@ -176,6 +207,7 @@ export default function Overview({ token }) {
           >
             {uploading ? 'Uploading...' : 'Upload statement'}
           </button>
+          </div>
         </div>
       </section>
 

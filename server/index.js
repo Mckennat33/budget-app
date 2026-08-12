@@ -194,7 +194,8 @@ function parsePdfTransactions(pdfText) {
         continue;
       }
 
-      const rawAmount = amountMatches[amountMatches.length - 1];
+      // choose the transaction amount when multiple amounts appear (e.g. amount then running balance)
+      let rawAmount = amountMatches.find((m) => /-|\(/.test(m)) || amountMatches[0];
       const amount = normalizeAmount(rawAmount);
       if (amount === null) {
         debugLines.push({ line, reason: 'invalid amount', rawAmount });
@@ -368,50 +369,85 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
 
   try {
     const userId = req.user.sub;
-    const months = [];
-    const now = new Date();
+    const { month, all } = req.query; // month in 'YYYY-MM' or 'YYYY-MM-DD'
 
+    // determine anchor date: either from query param or from the most recent transaction
+    let anchorDateStr;
+    if (month) {
+      // normalize month param to YYYY-MM-01
+      if (/^\d{4}-\d{2}$/.test(month)) {
+        anchorDateStr = `${month}-01`;
+      } else if (/^\d{4}-\d{2}-\d{2}$/.test(month)) {
+        anchorDateStr = month;
+      } else {
+        anchorDateStr = `${new Date().toISOString().slice(0, 10)}`;
+      }
+    } else {
+      const maxRow = await query('SELECT MAX(transaction_date) AS max_date FROM transactions WHERE user_id = $1', [userId]);
+      const maxDate = maxRow.rows[0] && maxRow.rows[0].max_date ? maxRow.rows[0].max_date : null;
+      anchorDateStr = maxDate ? maxDate.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+    }
+
+    const anchor = new Date(anchorDateStr);
+    const months = [];
     for (let index = 5; index >= 0; index -= 1) {
-      const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
+      const date = new Date(anchor.getFullYear(), anchor.getMonth() - index, 1);
       const label = date.toLocaleString('default', { month: 'short' });
       months.push({ label, start: date.toISOString().slice(0, 10), value: 0 });
     }
 
+    // trend uses anchor date as the reference
     const trendRows = await query(
       `SELECT date_trunc('month', transaction_date) AS month_start,
               SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend
          FROM transactions
         WHERE user_id = $1
-          AND transaction_date >= date_trunc('month', current_date) - INTERVAL '5 months'
+          AND transaction_date >= date_trunc('month', $2::date) - INTERVAL '5 months'
         GROUP BY month_start
         ORDER BY month_start`,
-      [userId]
+      [userId, anchorDateStr]
     );
 
     const trendMap = new Map(trendRows.rows.map((row) => [row.month_start.toISOString().slice(0, 10), Number(row.spend || 0)]));
-    const trendData = months.map((month) => ({ label: month.label, value: trendMap.get(month.start) || 0 }));
+    const trendData = months.map((monthObj) => ({ label: monthObj.label, value: trendMap.get(monthObj.start) || 0 }));
 
-    const totalsRow = await query(
-      `SELECT
-         SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-         SUM(amount) FILTER (WHERE amount > 0) AS income
-       FROM transactions
-      WHERE user_id = $1
-        AND date_trunc('month', transaction_date) = date_trunc('month', current_date)`,
-      [userId]
-    );
-    const totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+    let totals;
+    if (all === 'true') {
+      const totalsRow = await query(
+        `SELECT
+           SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
+           SUM(amount) FILTER (WHERE amount > 0) AS income
+         FROM transactions
+        WHERE user_id = $1`,
+        [userId]
+      );
+      totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+    } else {
+      const totalsRow = await query(
+        `SELECT
+           SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
+           SUM(amount) FILTER (WHERE amount > 0) AS income
+         FROM transactions
+        WHERE user_id = $1
+          AND date_trunc('month', transaction_date) = date_trunc('month', $2::date)`,
+        [userId, anchorDateStr]
+      );
+      totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+    }
 
-    const prevRow = await query(
-      `SELECT
-         SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-         SUM(amount) FILTER (WHERE amount > 0) AS income
-       FROM transactions
-      WHERE user_id = $1
-        AND date_trunc('month', transaction_date) = date_trunc('month', current_date - INTERVAL '1 month')`,
-      [userId]
-    );
-    const prevTotals = prevRow.rows[0] || { spend: 0, income: 0 };
+    let prevTotals = { spend: 0, income: 0 };
+    if (all !== 'true') {
+      const prevRow = await query(
+        `SELECT
+           SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
+           SUM(amount) FILTER (WHERE amount > 0) AS income
+         FROM transactions
+        WHERE user_id = $1
+          AND date_trunc('month', transaction_date) = (date_trunc('month', $2::date) - INTERVAL '1 month')`,
+        [userId, anchorDateStr]
+      );
+      prevTotals = prevRow.rows[0] || { spend: 0, income: 0 };
+    }
 
     const calcChange = (current, previous) => {
       if (!previous || previous === 0) {
@@ -420,16 +456,11 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
       return Math.round(((current - previous) / Math.abs(previous)) * 100);
     };
 
-    const categoriesRows = await query(
-      `SELECT category, SUM(amount) * -1 AS spend
-       FROM transactions
-      WHERE user_id = $1
-        AND date_trunc('month', transaction_date) = date_trunc('month', current_date)
-        AND amount < 0
-      GROUP BY category
-      ORDER BY spend DESC`,
-      [userId]
-    );
+    const categoriesQuery = all === 'true'
+      ? `SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND amount < 0 GROUP BY category ORDER BY spend DESC`
+      : `SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date) AND amount < 0 GROUP BY category ORDER BY spend DESC`;
+
+    const categoriesRows = all === 'true' ? await query(categoriesQuery, [userId]) : await query(categoriesQuery, [userId, anchorDateStr]);
 
     const requestedCategories = [
       'Dining Takeout',
@@ -456,6 +487,8 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
       incomeChange: calcChange(Number(totals.income || 0), Number(prevTotals.income || 0)),
       trendData,
       categories,
+      monthOptions: months,
+      anchorMonth: anchorDateStr,
     });
   } catch (error) {
     console.error('Overview fetch failed:', error);
@@ -475,10 +508,23 @@ app.get('/api/overview/debug', async (req, res) => {
 
   try {
     const userId = 1;
+    const { month, all } = req.query;
+
+    let anchorDateStr;
+    if (month) {
+      if (/^\d{4}-\d{2}$/.test(month)) anchorDateStr = `${month}-01`;
+      else if (/^\d{4}-\d{2}-\d{2}$/.test(month)) anchorDateStr = month;
+      else anchorDateStr = new Date().toISOString().slice(0, 10);
+    } else {
+      const maxRow = await query('SELECT MAX(transaction_date) AS max_date FROM transactions WHERE user_id = $1', [userId]);
+      const maxDate = maxRow.rows[0] && maxRow.rows[0].max_date ? maxRow.rows[0].max_date : null;
+      anchorDateStr = maxDate ? maxDate.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+    }
+
     const months = [];
-    const now = new Date();
+    const anchor = new Date(anchorDateStr);
     for (let index = 5; index >= 0; index -= 1) {
-      const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
+      const date = new Date(anchor.getFullYear(), anchor.getMonth() - index, 1);
       const label = date.toLocaleString('default', { month: 'short' });
       months.push({ label, start: date.toISOString().slice(0, 10), value: 0 });
     }
@@ -488,81 +534,44 @@ app.get('/api/overview/debug', async (req, res) => {
               SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend
          FROM transactions
         WHERE user_id = $1
-          AND transaction_date >= date_trunc('month', current_date) - INTERVAL '5 months'
+          AND transaction_date >= date_trunc('month', $2::date) - INTERVAL '5 months'
         GROUP BY month_start
         ORDER BY month_start`,
-      [userId]
+      [userId, anchorDateStr]
     );
 
     const trendMap = new Map(trendRows.rows.map((row) => [row.month_start.toISOString().slice(0, 10), Number(row.spend || 0)]));
-    const trendData = months.map((month) => ({ label: month.label, value: trendMap.get(month.start) || 0 }));
+    const trendData = months.map((m) => ({ label: m.label, value: trendMap.get(m.start) || 0 }));
 
-    const totalsRow = await query(
-      `SELECT
-         SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-         SUM(amount) FILTER (WHERE amount > 0) AS income
-       FROM transactions
-      WHERE user_id = $1
-        AND date_trunc('month', transaction_date) = date_trunc('month', current_date)`,
-      [userId]
-    );
-    const totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+    let totals;
+    if (all === 'true') {
+      const totalsRow = await query(
+        `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0) AS income FROM transactions WHERE user_id = $1`,
+        [userId]
+      );
+      totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+    } else {
+      const totalsRow = await query(
+        `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0) AS income FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date)`,
+        [userId, anchorDateStr]
+      );
+      totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+    }
 
-    const prevRow = await query(
-      `SELECT
-         SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-         SUM(amount) FILTER (WHERE amount > 0) AS income
-       FROM transactions
-      WHERE user_id = $1
-        AND date_trunc('month', transaction_date) = date_trunc('month', current_date - INTERVAL '1 month')`,
-      [userId]
-    );
-    const prevTotals = prevRow.rows[0] || { spend: 0, income: 0 };
+    const prevTotals = all === 'true' ? { spend: 0, income: 0 } : (await query(
+      `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0) AS income FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = (date_trunc('month', $2::date) - INTERVAL '1 month')`,
+      [userId, anchorDateStr]
+    )).rows[0] || { spend: 0, income: 0 };
 
-    const calcChange = (current, previous) => {
-      if (!previous || previous === 0) {
-        return current === 0 ? 0 : 100;
-      }
-      return Math.round(((current - previous) / Math.abs(previous)) * 100);
-    };
+    const categoriesRows = all === 'true'
+      ? await query(`SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND amount < 0 GROUP BY category ORDER BY spend DESC`, [userId])
+      : await query(`SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date) AND amount < 0 GROUP BY category ORDER BY spend DESC`, [userId, anchorDateStr]);
 
-    const categoriesRows = await query(
-      `SELECT category, SUM(amount) * -1 AS spend
-       FROM transactions
-      WHERE user_id = $1
-        AND date_trunc('month', transaction_date) = date_trunc('month', current_date)
-        AND amount < 0
-      GROUP BY category
-      ORDER BY spend DESC`,
-      [userId]
-    );
-
-    const requestedCategories = [
-      'Dining Takeout',
-      'Shopping',
-      'Other',
-      'Groceries',
-      'Transport',
-      'Subscriptions',
-      'Rent & Utilities',
-      'Health & Fitness',
-    ];
-
+    const requestedCategories = ['Dining Takeout','Shopping','Other','Groceries','Transport','Subscriptions','Rent & Utilities','Health & Fitness'];
     const categoryMap = new Map(categoriesRows.rows.map((row) => [row.category, Number(row.spend || 0)]));
-    const categories = requestedCategories.map((name) => ({
-      name,
-      amount: categoryMap.get(name) || 0,
-      change: 0,
-    }));
+    const categories = requestedCategories.map((name) => ({ name, amount: categoryMap.get(name) || 0, change: 0 }));
 
-    return res.json({
-      totalSpend: Number(totals.spend || 0),
-      totalIncome: Number(totals.income || 0),
-      spendChange: calcChange(Number(totals.spend || 0), Number(prevTotals.spend || 0)),
-      incomeChange: calcChange(Number(totals.income || 0), Number(prevTotals.income || 0)),
-      trendData,
-      categories,
-    });
+    return res.json({ totalSpend: Number(totals.spend || 0), totalIncome: Number(totals.income || 0), spendChange: 0, incomeChange: 0, trendData, categories, monthOptions: months, anchorMonth: anchorDateStr });
   } catch (error) {
     console.error('Debug overview fetch failed:', error);
     return res.status(500).json({ error: 'Unable to load debug overview data.' });
