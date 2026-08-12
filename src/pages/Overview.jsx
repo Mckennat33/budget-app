@@ -21,7 +21,6 @@ const defaultTrendData = [
 ];
 
 export default function Overview({ token }) {
-  const monthLabel = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
   const statementDate = `Statement prepared on ${new Date().toLocaleString('default', { month: 'short', day: 'numeric', year: 'numeric' })}`;
   const [spend, setSpend] = useState(0);
   const [spendChange, setSpendChange] = useState(0);
@@ -36,12 +35,14 @@ export default function Overview({ token }) {
   const [uploading, setUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [error, setError] = useState('');
+  const [uploadDebug, setUploadDebug] = useState(null);
   const fileInputRef = useRef(null);
 
   const fetchOverview = async () => {
     setLoading(true);
     setError('');
     setStatusMessage('');
+    setUploadDebug(null);
 
     async function applyData(data) {
       setSpend(data.totalSpend ?? 0);
@@ -107,12 +108,7 @@ export default function Overview({ token }) {
 
   useEffect(() => {
     fetchOverview();
-  }, [token]);
-
-  useEffect(() => {
-    // refetch when user toggles all/month selection
-    fetchOverview();
-  }, [showAll, selectedMonth]);
+  }, [token, showAll, selectedMonth]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -149,9 +145,11 @@ export default function Overview({ token }) {
       });
       const data = await response.json();
       if (!response.ok) {
+        setUploadDebug(data.debug || null);
         throw new Error(data.error || 'Upload failed.');
       }
       setStatusMessage(`Uploaded ${data.count} transactions successfully.`);
+      setUploadDebug(null);
       await fetchOverview();
     } catch (uploadError) {
       setError(uploadError.message || 'Upload failed.');
@@ -161,11 +159,19 @@ export default function Overview({ token }) {
     }
   };
 
+  // Header label follows the period actually being reported on, not today's date.
+  const monthLabel = showAll
+    ? 'All time'
+    : selectedMonth
+      ? new Date(`${selectedMonth}-01T00:00:00`).toLocaleString('default', { month: 'long', year: 'numeric' })
+      : new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+  const comparisonLabel = showAll ? 'across all statements' : 'compared to last month';
+
   const trendValues = trendData.map((item) => item.value);
   const maxTrendValue = Math.max(...trendValues, 1);
   const chartWidth = 560;
   const chartHeight = 140;
-  const pointX = (index) => (index / (trendData.length - 1)) * chartWidth;
+  const pointX = (index) => (trendData.length > 1 ? (index / (trendData.length - 1)) * chartWidth : 0);
   const pointY = (value) => chartHeight - (value / maxTrendValue) * chartHeight;
   const trendPoints = trendData.map((item, index) => `${pointX(index)},${pointY(item.value)}`);
 
@@ -213,6 +219,11 @@ export default function Overview({ token }) {
 
       {error && <div className="overview-error">{error}</div>}
       {statusMessage && <div className="overview-status">{statusMessage}</div>}
+      {uploadDebug && (
+        <pre className="overview-error" style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>
+          {JSON.stringify(uploadDebug, null, 2)}
+        </pre>
+      )}
 
       <section className="overview-trend">
         <div className="trend-title-row">
@@ -251,7 +262,7 @@ export default function Overview({ token }) {
           <div className="summary-card__title">Total spend</div>
           <div className="summary-card__amount">${spend.toFixed(2)}</div>
           <div className="summary-card__detail">
-            <span>{spendChange}%</span> compared to last week
+            <span>{spendChange}%</span> {comparisonLabel}
           </div>
         </article>
 
@@ -259,7 +270,7 @@ export default function Overview({ token }) {
           <div className="summary-card__title">Total income</div>
           <div className="summary-card__amount">${income.toFixed(2)}</div>
           <div className="summary-card__detail">
-            <span>{incomeChange}%</span> compared to last month
+            <span>{incomeChange}%</span> {comparisonLabel}
           </div>
         </article>
       </section>
@@ -302,4 +313,4 @@ export default function Overview({ token }) {
       </section>
     </div>
   );
-}
+    }

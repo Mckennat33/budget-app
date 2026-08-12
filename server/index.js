@@ -369,126 +369,139 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
 
   try {
     const userId = req.user.sub;
-    const { month, all } = req.query; // month in 'YYYY-MM' or 'YYYY-MM-DD'
+    const showAll = req.query.all === 'true';
+    const requestedMonth = req.query.month; // 'YYYY-MM' or undefined
 
-    // determine anchor date: either from query param or from the most recent transaction
-    let anchorDateStr;
-    if (month) {
-      // normalize month param to YYYY-MM-01
-      if (/^\d{4}-\d{2}$/.test(month)) {
-        anchorDateStr = `${month}-01`;
-      } else if (/^\d{4}-\d{2}-\d{2}$/.test(month)) {
-        anchorDateStr = month;
-      } else {
-        anchorDateStr = `${new Date().toISOString().slice(0, 10)}`;
-      }
+    // 1. Find every distinct month that has data for this user (for the dropdown)
+    const monthsResult = await query(
+      `SELECT DISTINCT date_trunc('month', transaction_date) AS month_start
+       FROM transactions
+       WHERE user_id = $1
+       ORDER BY month_start DESC`,
+      [userId]
+    );
+    const monthOptions = monthsResult.rows.map((row) => ({
+      start: row.month_start.toISOString().slice(0, 10),
+      label: row.month_start.toLocaleString('default', { month: 'short' }),
+    }));
+
+    // 2. Figure out which month we're actually reporting on
+    let anchorMonthStart;
+    if (requestedMonth) {
+      anchorMonthStart = `${requestedMonth}-01`;
+    } else if (monthsResult.rows.length > 0) {
+      anchorMonthStart = monthsResult.rows[0].month_start.toISOString().slice(0, 10);
     } else {
-      const maxRow = await query('SELECT MAX(transaction_date) AS max_date FROM transactions WHERE user_id = $1', [userId]);
-      const maxDate = maxRow.rows[0] && maxRow.rows[0].max_date ? maxRow.rows[0].max_date : null;
-      anchorDateStr = maxDate ? maxDate.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+      anchorMonthStart = new Date().toISOString().slice(0, 8) + '01';
     }
 
-    const anchor = new Date(anchorDateStr);
+    // 3. Trend: last 6 months ending at the anchor month (not necessarily "today")
     const months = [];
+    const anchorDate = new Date(anchorMonthStart);
     for (let index = 5; index >= 0; index -= 1) {
-      const date = new Date(anchor.getFullYear(), anchor.getMonth() - index, 1);
+      const date = new Date(anchorDate.getFullYear(), anchorDate.getMonth() - index, 1);
       const label = date.toLocaleString('default', { month: 'short' });
-      months.push({ label, start: date.toISOString().slice(0, 10), value: 0 });
+      months.push({ label, start: date.toISOString().slice(0, 10) });
     }
 
-    // trend uses anchor date as the reference
     const trendRows = await query(
       `SELECT date_trunc('month', transaction_date) AS month_start,
               SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend
          FROM transactions
         WHERE user_id = $1
-          AND transaction_date >= date_trunc('month', $2::date) - INTERVAL '5 months'
+          AND transaction_date >= $2::date - INTERVAL '5 months'
+          AND transaction_date < $2::date + INTERVAL '1 month'
         GROUP BY month_start
         ORDER BY month_start`,
-      [userId, anchorDateStr]
+      [userId, anchorMonthStart]
     );
-
     const trendMap = new Map(trendRows.rows.map((row) => [row.month_start.toISOString().slice(0, 10), Number(row.spend || 0)]));
-    const trendData = months.map((monthObj) => ({ label: monthObj.label, value: trendMap.get(monthObj.start) || 0 }));
+    const trendData = months.map((month) => ({ label: month.label, value: trendMap.get(month.start) || 0 }));
 
-    let totals;
-    if (all === 'true') {
-      const totalsRow = await query(
-        `SELECT
-           SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-           SUM(amount) FILTER (WHERE amount > 0) AS income
-         FROM transactions
-        WHERE user_id = $1`,
-        [userId]
-      );
-      totals = totalsRow.rows[0] || { spend: 0, income: 0 };
-    } else {
-      const totalsRow = await query(
-        `SELECT
-           SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-           SUM(amount) FILTER (WHERE amount > 0) AS income
-         FROM transactions
-        WHERE user_id = $1
-          AND date_trunc('month', transaction_date) = date_trunc('month', $2::date)`,
-        [userId, anchorDateStr]
-      );
-      totals = totalsRow.rows[0] || { spend: 0, income: 0 };
-    }
+    // 4. Totals for the selected period (or all-time)
+    const totalsWhere = showAll
+      ? `WHERE user_id = $1`
+      : `WHERE user_id = $1 AND date_trunc('month', transaction_date) = $2::date`;
+    const totalsParams = showAll ? [userId] : [userId, anchorMonthStart];
 
+    const totalsRow = await query(
+      `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
+              SUM(amount) FILTER (WHERE amount > 0) AS income
+       FROM transactions ${totalsWhere}`,
+      totalsParams
+    );
+    const totals = totalsRow.rows[0] || { spend: 0, income: 0 };
+
+    // 5. Previous period totals (for spendChange / incomeChange) — only meaningful when not "all time"
     let prevTotals = { spend: 0, income: 0 };
-    if (all !== 'true') {
+    if (!showAll) {
       const prevRow = await query(
-        `SELECT
-           SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-           SUM(amount) FILTER (WHERE amount > 0) AS income
+        `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
+                SUM(amount) FILTER (WHERE amount > 0) AS income
          FROM transactions
         WHERE user_id = $1
-          AND date_trunc('month', transaction_date) = (date_trunc('month', $2::date) - INTERVAL '1 month')`,
-        [userId, anchorDateStr]
+          AND date_trunc('month', transaction_date) = $2::date - INTERVAL '1 month'`,
+        [userId, anchorMonthStart]
       );
       prevTotals = prevRow.rows[0] || { spend: 0, income: 0 };
     }
 
     const calcChange = (current, previous) => {
-      if (!previous || previous === 0) {
-        return current === 0 ? 0 : 100;
-      }
+      if (!previous || previous === 0) return current === 0 ? 0 : 100;
       return Math.round(((current - previous) / Math.abs(previous)) * 100);
     };
 
-    const categoriesQuery = all === 'true'
-      ? `SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND amount < 0 GROUP BY category ORDER BY spend DESC`
-      : `SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date) AND amount < 0 GROUP BY category ORDER BY spend DESC`;
+    // 6. Category totals for the selected period
+    const categoriesWhere = showAll
+      ? `WHERE user_id = $1 AND amount < 0`
+      : `WHERE user_id = $1 AND date_trunc('month', transaction_date) = $2::date AND amount < 0`;
+    const categoriesRows = await query(
+      `SELECT category, SUM(amount) * -1 AS spend
+       FROM transactions ${categoriesWhere}
+       GROUP BY category
+       ORDER BY spend DESC`,
+      totalsParams
+    );
+    const categoryMap = new Map(categoriesRows.rows.map((row) => [row.category, Number(row.spend || 0)]));
 
-    const categoriesRows = all === 'true' ? await query(categoriesQuery, [userId]) : await query(categoriesQuery, [userId, anchorDateStr]);
+    // 7. Category totals for the PREVIOUS period, so we can compute real %change per category
+    let prevCategoryMap = new Map();
+    if (!showAll) {
+      const prevCategoriesRows = await query(
+        `SELECT category, SUM(amount) * -1 AS spend
+         FROM transactions
+        WHERE user_id = $1
+          AND date_trunc('month', transaction_date) = $2::date - INTERVAL '1 month'
+          AND amount < 0
+        GROUP BY category`,
+        [userId, anchorMonthStart]
+      );
+      prevCategoryMap = new Map(prevCategoriesRows.rows.map((row) => [row.category, Number(row.spend || 0)]));
+    }
 
     const requestedCategories = [
-      'Dining Takeout',
-      'Shopping',
-      'Other',
-      'Groceries',
-      'Transport',
-      'Subscriptions',
-      'Rent & Utilities',
-      'Health & Fitness',
+      'Dining Takeout', 'Shopping', 'Other', 'Groceries',
+      'Transport', 'Subscriptions', 'Rent & Utilities', 'Health & Fitness',
     ];
-
-    const categoryMap = new Map(categoriesRows.rows.map((row) => [row.category, Number(row.spend || 0)]));
-    const categories = requestedCategories.map((name) => ({
-      name,
-      amount: categoryMap.get(name) || 0,
-      change: 0,
-    }));
+    const categories = requestedCategories.map((name) => {
+      const amount = categoryMap.get(name) || 0;
+      const prevAmount = prevCategoryMap.get(name) || 0;
+      return {
+        name,
+        amount,
+        change: showAll ? 0 : calcChange(amount, prevAmount),
+      };
+    });
 
     return res.json({
       totalSpend: Number(totals.spend || 0),
       totalIncome: Number(totals.income || 0),
-      spendChange: calcChange(Number(totals.spend || 0), Number(prevTotals.spend || 0)),
-      incomeChange: calcChange(Number(totals.income || 0), Number(prevTotals.income || 0)),
+      spendChange: showAll ? 0 : calcChange(Number(totals.spend || 0), Number(prevTotals.spend || 0)),
+      incomeChange: showAll ? 0 : calcChange(Number(totals.income || 0), Number(prevTotals.income || 0)),
       trendData,
       categories,
-      monthOptions: months,
-      anchorMonth: anchorDateStr,
+      monthOptions,
+      anchorMonth: anchorMonthStart,
     });
   } catch (error) {
     console.error('Overview fetch failed:', error);
