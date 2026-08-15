@@ -1,0 +1,445 @@
+id,user_id,transaction_date,description,amount,category,created_at
+1,1,2026-06-16,"Bank transaction If you see a check description in the Transaction Detail section, it means your check has already been converted for electronic payment. Because of this, we're not able to return the check to you or show you an image on Chase.com. ^ An image of this check may be available for you to view on Chase.com.",995,Other,2026-08-12
+2,1,2026-05-19,Robinhood Funds 892953134 Web ID: 1464364776 -27.14,-27.14,Other,2026-08-12
+3,1,2026-05-20,Robinhood Funds 892953134 Web ID: 1464364776 -25.00,-25,Other,2026-08-12
+4,1,2026-05-20,Robinhood Funds 892953134 Web ID: 1464364776 -25.00,-25,Other,2026-08-12
+5,1,2026-05-20,Card Purchase With Pin 05/20 Target T-0942 Chicago IL Card 3413 -37.70,-37.7,Shopping,2026-08-12
+6,1,2026-05-21,Card Purchase 05/20 Spirits & Snacks Chicago IL Card 3413 - 9.91,9.91,Other,2026-08-12
+7,1,2026-05-21,Card Purchase With Pin 05/21 Target T-0942 Chicago IL Card 3413 -29.39,-29.39,Shopping,2026-08-12
+8,1,2026-05-22,Coyote Logistics Payments PPD ID: 9086732000,1764.71,Other,2026-08-12
+9,1,2026-05-22,05/22 Online Transfer To Sav ...4385 Transaction#: 29319434507 -500.00,-500,Other,2026-08-12
+10,1,2026-05-22,Card Purchase With Pin 05/22 Target T-0942 Chicago IL Card 3413 -43.44 CHECKING SUMMARY CHECKS PAID TRANSACTION DETAIL *start*summary *end*summary *start*checks paid section2 *end*checks paid section2 *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-43.44,Shopping,2026-08-12
+11,1,2026-05-26,Robinhood Funds 892953134 Web ID: 1464364776 - 10.00,10,Other,2026-08-12
+12,1,2026-05-26,Card Purchase 05/24 Tst* Cody S Public Hous Chicago IL Card 3413 - 26.16,26.16,Other,2026-08-12
+13,1,2026-05-26,Card Purchase 05/24 Sq *Hexe Coffee CO. Chicago IL Card 3413 -7.09,-7.09,Other,2026-08-12
+14,1,2026-05-26,Card Purchase With Pin 05/24 Target T-0942 Chicago IL Card 3413 - 32.06,32.06,Shopping,2026-08-12
+15,1,2026-05-26,Card Purchase 05/24 Spirits & Snacks Chicago IL Card 3413 -7.07,-7.07,Other,2026-08-12
+16,1,2026-05-26,Card Purchase 05/25 Target 00009423 Chicago IL Card 3413 -4.64,-4.64,Shopping,2026-08-12
+17,1,2026-05-26,Card Purchase 05/26 Tst* Frank And Mary's T Chicago IL Card 3413 - 10.86,10.86,Other,2026-08-12
+18,1,2026-05-26,Card Purchase With Pin 05/26 Target T-0942 Chicago IL Card 3413 - 62.85,62.85,Shopping,2026-08-12
+19,1,2026-05-27,Card Purchase 05/27 Tst* Frank And Mary's T Chicago IL Card 3413 - 10.86,10.86,Other,2026-08-12
+20,1,2026-05-27,Dept Education Student Ln PPD ID: 9102002601 -187.99,-187.99,Other,2026-08-12
+21,1,2026-05-27,Peoples Gas Autopay PPD ID: 4361613900 - 54.07,54.07,Rent & Utilities,2026-08-12
+22,1,2026-05-27,Robinhood Funds 892953134 Web ID: 1464364776 - 25.00,25,Other,2026-08-12
+23,1,2026-05-27,Card Purchase With Pin 05/27 Target T-0942 Chicago IL Card 3413 - 31.97,31.97,Shopping,2026-08-12
+24,1,2026-05-29,Coyote Logistics Payments PPD ID: 9086732000,2234.39,Other,2026-08-12
+25,1,2026-06-01,Card Purchase 05/29 Spirits & Snacks Chicago IL Card 3413 - 19.28,19.28,Other,2026-08-12
+26,1,2026-06-01,Card Purchase 05/29 Su Taqueria El Rey Del Chicago IL Card 3413 - 48.16,48.16,Other,2026-08-12
+27,1,2026-06-01,Card Purchase 05/30 Tst* Jeni's Splendid Ic Chicago IL Card 3413 - 22.43,22.43,Other,2026-08-12
+28,1,2026-06-01,Card Purchase 05/31 Starbucks Store 02223 Chicago IL Card 3413 -4.37,-4.37,Dining Takeout,2026-08-12
+29,1,2026-06-01,Card Purchase With Pin 05/31 Target T-0942 Chicago IL Card 3413 - 40.33,40.33,Shopping,2026-08-12
+30,1,2026-06-01,Card Purchase 06/01 Tst* Small Bar Chicago IL Card 3413 -8.76,-8.76,Dining Takeout,2026-08-12
+31,1,2026-06-01,Card Purchase With Pin 06/01 Target T-0942 Chicago IL Card 3413 - 46.75,46.75,Shopping,2026-08-12
+32,1,2026-06-02,Comcast-Xfinity Cable Svcs PPD ID: 0000213249 -177.47,-177.47,Rent & Utilities,2026-08-12
+33,1,2026-06-02,Card Purchase With Pin 06/02 Target T-0942 Chicago IL Card 3413 - 34.04,34.04,Shopping,2026-08-12
+34,1,2026-06-04,Card Purchase 06/03 Spirits & Snacks Chicago IL Card 3413 - 17.18,17.18,Other,2026-08-12
+35,1,2026-06-04,Recurring Card Purchase 06/03 Spotify USA 877-7781161 NY Card 3413 - 14.32,14.32,Subscriptions,2026-08-12
+36,1,2026-06-04,Card Purchase 06/04 Convenient Food Mart Chicago IL Card 3413 - 18.75,18.75,Other,2026-08-12
+37,1,2026-06-04,Card Purchase 06/04 Gametime Gametime.CO CA Card 3413 -376.00,-376,Other,2026-08-12
+38,1,2026-06-04,Card Purchase With Pin 06/04 Target T-0942 Chicago IL Card 3413 - 51.51,51.51,Shopping,2026-08-12
+39,1,2026-06-08,Card Purchase 06/05 Su Taqueria El Rey Del Chicago IL Card 3413 - 40.92,40.92,Other,2026-08-12
+40,1,2026-06-08,Card Purchase 06/06 Target T-0942 Chicago IL Card 3413 -5.56,-5.56,Shopping,2026-08-12
+41,1,2026-06-08,Card Purchase 06/07 Tst* Old Crow Wrigleyvi Chicago IL Card 3413 -8.98,-8.98,Other,2026-08-12
+42,1,2026-06-08,Card Purchase 06/06 Levy@2Wrigley Field Chicago IL Card 3413 - 56.48,56.48,Other,2026-08-12
+43,1,2026-06-08,Card Purchase 06/06 Levy@2Wrigley Field Chicago IL Card 3413 - 23.11,23.11,Other,2026-08-12
+44,1,2026-06-08,Card Purchase 06/07 Tst* The Stretch Chicago IL Card 3413 - 30.20 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of Account Number: You were not charged a Monthly Service Fee ONE Account was linked,30.2,Other,2026-08-12
+45,1,2026-06-08,Card Purchase With Pin 06/07 Target T-0942 Chicago IL Card 3413 - 60.17,60.17,Shopping,2026-08-12
+46,1,2026-06-08,Card Purchase With Pin 06/08 Target T-0942 Chicago IL Card 3413 - 45.71,45.71,Shopping,2026-08-12
+47,1,2026-06-09,Card Purchase With Pin 06/09 Target T-0942 Chicago IL Card 3413 - 33.53,33.53,Shopping,2026-08-12
+48,1,2026-06-10,Subscription Acorns Cqr7J9 Web ID: 9000142694 -3.00,-3,Subscriptions,2026-08-12
+49,1,2026-06-10,Card Purchase With Pin 06/10 Target T-0942 Chicago IL Card 3413 - 21.38,21.38,Shopping,2026-08-12
+50,1,2026-06-12,Coyote Logistics Payments PPD ID: 9086732000,2478.34,Other,2026-08-12
+51,1,2026-06-12,Venmo Cashout PPD ID: 5264681992,2678.34,Other,2026-08-12
+52,1,2026-06-12,Venmo Cashout PPD ID: 5264681992,2772.34,Other,2026-08-12
+53,1,2026-06-12,Card Purchase 06/11 Regal City North 1789 Chicago IL Card 3413 - 32.08,32.08,Other,2026-08-12
+54,1,2026-06-15,Online Transfer From Sav ...4385 Transaction#: 29614057767,2766.13,Other,2026-08-12
+55,1,2026-06-15,Card Purchase 06/12 Spirits & Snacks Chicago IL Card 3413 - 13.44,13.44,Other,2026-08-12
+56,1,2026-06-15,Card Purchase 06/12 Tst*Texan Taco Bar Chicago IL Card 3413 - 85.38,85.38,Dining Takeout,2026-08-12
+57,1,2026-06-15,Card Purchase 06/13 Chipotle 1244 Chicago IL Card 3413 - 14.84,14.84,Dining Takeout,2026-08-12
+58,1,2026-06-15,Card Purchase 06/13 Spirits & Snacks Chicago IL Card 3413 - 11.61,11.61,Other,2026-08-12
+59,1,2026-06-15,Card Purchase 06/14 Tst* Frank And Mary's T Chicago IL Card 3413 -7.66,-7.66,Other,2026-08-12
+60,1,2026-06-15,Recurring Card Purchase 06/14 LA Fitness 949-255-8100 CA Card 3413 - 39.99,39.99,Health & Fitness,2026-08-12
+61,1,2026-06-15,Card Purchase With Pin 06/14 Target T-0942 Chicago IL Card 3413 - 64.00,64,Shopping,2026-08-12
+62,1,2026-06-15,Card Purchase With Pin 06/15 Target T-0942 Chicago IL Card 3413 - 47.61,47.61,Shopping,2026-08-12
+63,1,2026-06-16,Recurring Card Purchase 06/16 Scrimba Oslo Card 3413 - 30.00,30,Other,2026-08-12
+64,1,2026-06-16,Card Purchase 06/16 Www.Logoai.Com Logoai.Com VA Card 3413 - 29.00,29,Other,2026-08-12
+65,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+66,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+67,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 - 29.99,29.99,Other,2026-08-12
+68,1,2026-06-16,"Check # 4151 -995.00 on your CHASE TOTAL CHECKING account since you had of the following during the monthly statement period: in qualifying electronic deposits; or statement) average beginning day balance in this account, or in combination with any other linked qualifying personal deposits or investments; or to a qualifying checking account TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. chase.com/disclosures For more information about the qualifying accounts, deposits, investments or transactions to waive the Monthly Service Fee on this account (if applicable), or if you have any questions, please refer to the Additional Banking Services and Fees at or call us at the number listed on this statement. *start*post transaction detail message *end*post transaction detail message *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",-995,Other,2026-08-12
+69,1,2026-06-17,Comed Payments PPD ID: 2360938600 -16.77,-16.77,Other,2026-08-12
+70,1,2026-06-17,Card Purchase With Pin 06/17 Target T-0942 Chicago IL Card 3413 -28.04,-28.04,Shopping,2026-08-12
+71,1,2026-06-18,Card Purchase 06/17 Spirits & Snacks Chicago IL Card 3413 -28.10,-28.1,Other,2026-08-12
+72,1,2026-06-18,Card Purchase 06/17 Metro + Smartbar 800-514-3849 NC Card 3413 -88.35,-88.35,Transport,2026-08-12
+73,1,2026-06-18,Card Purchase With Pin 06/18 Target T-0942 Chicago IL Card 3413 -44.71,-44.71,Shopping,2026-08-12
+74,1,2026-06-22,Card Purchase 06/17 Levy@ 1C United Cntr C Chicago IL Card 3413 -40.49,-40.49,Other,2026-08-12
+75,1,2026-06-22,Card Purchase 06/19 Emporium Logan Square Chicago IL Card 3413 -10.00,-10,Other,2026-08-12
+76,1,2026-06-22,Card Purchase 06/20 Spirits & Snacks Chicago IL Card 3413 -14.66,-14.66,Other,2026-08-12
+77,1,2026-06-22,Card Purchase 06/21 Tst* Paradise Park Chicago IL Card 3413 -130.80,-130.8,Other,2026-08-12
+78,1,2026-06-22,Card Purchase 06/21 Spirits & Snacks Chicago IL Card 3413 -10.70,-10.7,Other,2026-08-12
+79,1,2026-06-22,Card Purchase With Pin 06/22 Target T-0942 Chicago IL Card 3413 -51.77,-51.77,Shopping,2026-08-12
+80,1,2026-06-23,Online Transfer From Sav ...4385 Transaction#: 29734765777,635.73,Other,2026-08-12
+81,1,2026-06-23,Card Purchase 06/22 Spirits & Snacks Chicago IL Card 3413 -10.92,-10.92,Other,2026-08-12
+82,1,2026-06-23,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+83,1,2026-06-23,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+84,1,2026-06-23,Card Purchase With Pin 06/23 Target T-0942 Chicago IL Card 3413 -45.22 CHECKING SUMMARY TRANSACTION DETAIL *start*summary *end*summary *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-45.22,Shopping,2026-08-12
+85,1,2026-06-25,Online Transfer From Sav ...4385 Transaction#: 29758734717,292.07,Other,2026-08-12
+86,1,2026-06-25,Card Purchase 06/25 Tst* Frank And Mary's T Chicago IL Card 3413 - 39.30,39.3,Other,2026-08-12
+87,1,2026-06-25,Peoples Gas Autopay PPD ID: 4361613900 - 41.74,41.74,Rent & Utilities,2026-08-12
+88,1,2026-06-25,Card Purchase With Pin 06/25 Target T-0942 Chicago IL Card 3413 - 28.20,28.2,Shopping,2026-08-12
+89,1,2026-06-26,Coyote Logistics Payments PPD ID: 9086732000,1968,Other,2026-08-12
+90,1,2026-06-26,Venmo Cashout PPD ID: 5264681992,1993,Other,2026-08-12
+91,1,2026-06-26,Card Purchase 06/26 Tst* Frank And Mary's T Chicago IL Card 3413 - 22.98,22.98,Other,2026-08-12
+92,1,2026-06-29,Card Purchase 06/26 Spirits & Snacks Chicago IL Card 3413 - 16.98,16.98,Other,2026-08-12
+93,1,2026-06-29,Card Purchase 06/26 Spirits & Snacks Chicago IL Card 3413 - 14.66,14.66,Other,2026-08-12
+94,1,2026-06-29,Dept Education Student Ln PPD ID: 9102002601 -187.99,-187.99,Other,2026-08-12
+95,1,2026-06-29,Card Purchase With Pin 06/27 Target T-0942 Chicago IL Card 3413 - 55.50,55.5,Shopping,2026-08-12
+96,1,2026-06-29,Card Purchase With Pin 06/29 Target T-0942 Chicago IL Card 3413 - 65.02,65.02,Shopping,2026-08-12
+97,1,2026-06-30,Card Purchase 06/30 Customink LLC 800-293-4232 VA Card 3413 -134.38,-134.38,Other,2026-08-12
+98,1,2026-06-30,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+99,1,2026-06-30,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+100,1,2026-06-30,Card Purchase 06/30 Fanduelsbkprimary 9717083015 NJ Card 3413 - 20.00,20,Other,2026-08-12
+101,1,2026-06-30,Venmo Payment 1051352252813 Web ID: 3264681992 - 80.00,80,Other,2026-08-12
+102,1,2026-07-01,Card Purchase 06/30 Spirits & Snacks Chicago IL Card 3413 - 20.61,20.61,Other,2026-08-12
+103,1,2026-07-01,Card Purchase 07/01 Tst* Frank And Mary's T Chicago IL Card 3413 -7.66,-7.66,Other,2026-08-12
+104,1,2026-07-01,Card Purchase 07/01 Sq *Mr. Taco's Restaura Chicago IL Card 3413 -8.76,-8.76,Other,2026-08-12
+105,1,2026-07-02,Online Transfer From Sav ...4385 Transaction#: 29862240857,1584.43,Other,2026-08-12
+106,1,2026-07-02,Chase Crd Autopay PPD ID: 4760039224 -526.34,-526.34,Other,2026-08-12
+107,1,2026-07-02,Venmo Payment 1051393607869 Web ID: 3264681992 - 35.00,35,Other,2026-08-12
+108,1,2026-07-02,Comcast-Xfinity Cable Svcs PPD ID: 0000213249 -177.47,-177.47,Rent & Utilities,2026-08-12
+109,1,2026-07-02,Card Purchase With Pin 07/02 Target T-0942 Chicago IL Card 3413 - 55.67,55.67,Shopping,2026-08-12
+110,1,2026-07-06,Card Purchase 07/02 Emporium Logan Square Chicago IL Card 3413 - 18.00,18,Other,2026-08-12
+111,1,2026-07-06,Recurring Card Purchase 07/03 Spotify USA 877-7781161 NY Card 3413 - 14.32,14.32,Subscriptions,2026-08-12
+112,1,2026-07-06,Card Purchase 07/03 Tst*Npk Hospitality Off Chicago IL Card 3413 - 31.36,31.36,Health & Fitness,2026-08-12
+113,1,2026-07-06,Card Purchase 07/03 Regal City North 1789 Chicago IL Card 3413 - 14.38 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of Account Number:,14.38,Other,2026-08-12
+114,1,2026-07-06,Card Purchase 07/04 Spirits & Snacks Chicago IL Card 3413 - 37.97,37.97,Other,2026-08-12
+115,1,2026-07-06,Card Purchase With Pin 07/05 Target T-0942 Chicago IL Card 3413 - 43.26,43.26,Shopping,2026-08-12
+116,1,2026-07-06,Card Purchase With Pin 07/06 Target T-0942 Chicago IL Card 3413 - 21.52,21.52,Shopping,2026-08-12
+117,1,2026-07-07,Card Purchase 07/06 Spirits & Snacks Chicago IL Card 3413 - 13.44,13.44,Other,2026-08-12
+118,1,2026-07-07,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+119,1,2026-07-07,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+120,1,2026-07-07,Venmo Payment 1051505968240 Web ID: 3264681992 - 55.00,55,Other,2026-08-12
+121,1,2026-07-07,Venmo Payment 1051528332501 Web ID: 3264681992 - 80.00,80,Other,2026-08-12
+122,1,2026-07-08,Online Transfer From Sav ...4385 Transaction#: 29926326592,1083.97,Other,2026-08-12
+123,1,2026-07-08,Card Purchase 07/07 Spirits & Snacks Chicago IL Card 3413 - 19.14,19.14,Other,2026-08-12
+124,1,2026-07-08,Card Purchase 07/08 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+125,1,2026-07-08,Card Purchase 07/08 Tst* Ludlow Liquors Chicago IL Card 3413 - 19.11,19.11,Other,2026-08-12
+126,1,2026-07-09,Venmo Cashout PPD ID: 5264681992,1115.66,Other,2026-08-12
+127,1,2026-07-09,Card Purchase 07/09 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+128,1,2026-07-09,Card Purchase With Pin 07/09 Target T-0942 Chicago IL Card 3413 - 92.36,92.36,Shopping,2026-08-12
+129,1,2026-07-09,Venmo Payment 1051573514696 Web ID: 3264681992 - 31.00,31,Other,2026-08-12
+130,1,2026-07-10,Coyote Logistics Payments PPD ID: 9086732000,2487.74,Other,2026-08-12
+131,1,2026-07-10,Card Purchase 07/09 Reckless Records Wp Chicago IL Card 3413 - 50.69,50.69,Other,2026-08-12
+132,1,2026-07-10,Subscription Acorns Tfw2N9 Web ID: 9000142694 -3.00,-3,Subscriptions,2026-08-12
+133,1,2026-07-13,Card Purchase 07/10 Spirits & Snacks Chicago IL Card 3413 - 26.99,26.99,Other,2026-08-12
+134,1,2026-07-13,Card Purchase 07/11 Barra N Chicago IL Card 3413 - 15.01,15.01,Dining Takeout,2026-08-12
+135,1,2026-07-13,Card Purchase 07/12 Target T-3214 Chicago IL Card 3413 -3.27,-3.27,Shopping,2026-08-12
+136,1,2026-07-13,Card Purchase With Pin 07/12 Target T-0942 Chicago IL Card 3413 - 81.58,81.58,Shopping,2026-08-12
+137,1,2026-07-13,Venmo Payment 1051613843292 Web ID: 3264681992 - 15.00,15,Other,2026-08-12
+138,1,2026-07-14,Card Purchase 07/13 Spirits & Snacks Chicago IL Card 3413 -6.10,-6.1,Other,2026-08-12
+139,1,2026-07-14,Recurring Card Purchase 07/14 LA Fitness 949-255-8100 CA Card 3413 - 39.99,39.99,Health & Fitness,2026-08-12
+140,1,2026-07-14,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+141,1,2026-07-14,Robinhood Funds 892953134 Web ID: 1464364776 - 50.00,50,Other,2026-08-12
+142,1,2026-07-15,"Card Purchase 07/15 Tst* Rizzo's Bar & Inn Chicago IL Card 3413 - 87.10 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. You were not charged a Monthly Service Fee ONE Account was linked chase.com/disclosures",87.1,Dining Takeout,2026-08-12
+143,1,2026-07-15,Card Purchase With Pin 07/15 Target T-0942 Chicago IL Card 3413 - 39.52,39.52,Shopping,2026-08-12
+144,1,2026-07-16,Card Purchase 07/14 Levy@2Wrigley Field Chicago IL Card 3413 - 48.79,48.79,Other,2026-08-12
+145,1,2026-07-16,Card Purchase 07/15 Spirits & Snacks Chicago IL Card 3413 -9.93,-9.93,Other,2026-08-12
+146,1,2026-07-16,Card Purchase 07/16 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+147,1,2026-07-16,Recurring Card Purchase 07/16 Scrimba Oslo Card 3413 - 30.00,30,Other,2026-08-12
+148,1,2026-07-16,"Comed Payments PPD ID: 2360938600 - 16.92 on your CHASE TOTAL CHECKING account since you had of the following during the monthly statement period: in qualifying electronic deposits; or statement) average beginning day balance in this account, or in combination with any other linked qualifying personal deposits or investments; or to a qualifying checking account For more information about the qualifying accounts, deposits, investments or transactions to waive the Monthly Service Fee on this account (if applicable), or if you have any questions, please refer to the Additional Banking Services and Fees at or call us at the number listed on this statement. TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",16.92,Other,2026-08-12
+149,1,2026-06-16,"Bank transaction If you see a check description in the Transaction Detail section, it means your check has already been converted for electronic payment. Because of this, we're not able to return the check to you or show you an image on Chase.com. ^ An image of this check may be available for you to view on Chase.com.",995,Other,2026-08-12
+150,1,2026-05-19,Robinhood Funds 892953134 Web ID: 1464364776 -27.14,-27.14,Other,2026-08-12
+151,1,2026-05-20,Robinhood Funds 892953134 Web ID: 1464364776 -25.00,-25,Other,2026-08-12
+152,1,2026-05-20,Robinhood Funds 892953134 Web ID: 1464364776 -25.00,-25,Other,2026-08-12
+153,1,2026-05-20,Card Purchase With Pin 05/20 Target T-0942 Chicago IL Card 3413 -37.70,-37.7,Shopping,2026-08-12
+154,1,2026-05-21,Card Purchase 05/20 Spirits & Snacks Chicago IL Card 3413 - 9.91,9.91,Other,2026-08-12
+155,1,2026-05-21,Card Purchase With Pin 05/21 Target T-0942 Chicago IL Card 3413 -29.39,-29.39,Shopping,2026-08-12
+156,1,2026-05-22,Coyote Logistics Payments PPD ID: 9086732000,1764.71,Other,2026-08-12
+157,1,2026-05-22,05/22 Online Transfer To Sav ...4385 Transaction#: 29319434507 -500.00,-500,Other,2026-08-12
+158,1,2026-05-22,Card Purchase With Pin 05/22 Target T-0942 Chicago IL Card 3413 -43.44 CHECKING SUMMARY CHECKS PAID TRANSACTION DETAIL *start*summary *end*summary *start*checks paid section2 *end*checks paid section2 *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-43.44,Shopping,2026-08-12
+159,1,2026-05-26,Robinhood Funds 892953134 Web ID: 1464364776 - 10.00,10,Other,2026-08-12
+160,1,2026-05-26,Card Purchase 05/24 Tst* Cody S Public Hous Chicago IL Card 3413 - 26.16,26.16,Other,2026-08-12
+161,1,2026-05-26,Card Purchase 05/24 Sq *Hexe Coffee CO. Chicago IL Card 3413 -7.09,-7.09,Other,2026-08-12
+162,1,2026-05-26,Card Purchase With Pin 05/24 Target T-0942 Chicago IL Card 3413 - 32.06,32.06,Shopping,2026-08-12
+163,1,2026-05-26,Card Purchase 05/24 Spirits & Snacks Chicago IL Card 3413 -7.07,-7.07,Other,2026-08-12
+164,1,2026-05-26,Card Purchase 05/25 Target 00009423 Chicago IL Card 3413 -4.64,-4.64,Shopping,2026-08-12
+165,1,2026-05-26,Card Purchase 05/26 Tst* Frank And Mary's T Chicago IL Card 3413 - 10.86,10.86,Other,2026-08-12
+166,1,2026-05-26,Card Purchase With Pin 05/26 Target T-0942 Chicago IL Card 3413 - 62.85,62.85,Shopping,2026-08-12
+167,1,2026-05-27,Card Purchase 05/27 Tst* Frank And Mary's T Chicago IL Card 3413 - 10.86,10.86,Other,2026-08-12
+168,1,2026-05-27,Dept Education Student Ln PPD ID: 9102002601 -187.99,-187.99,Other,2026-08-12
+169,1,2026-05-27,Peoples Gas Autopay PPD ID: 4361613900 - 54.07,54.07,Rent & Utilities,2026-08-12
+170,1,2026-05-27,Robinhood Funds 892953134 Web ID: 1464364776 - 25.00,25,Other,2026-08-12
+171,1,2026-05-27,Card Purchase With Pin 05/27 Target T-0942 Chicago IL Card 3413 - 31.97,31.97,Shopping,2026-08-12
+172,1,2026-05-29,Coyote Logistics Payments PPD ID: 9086732000,2234.39,Other,2026-08-12
+173,1,2026-06-01,Card Purchase 05/29 Spirits & Snacks Chicago IL Card 3413 - 19.28,19.28,Other,2026-08-12
+174,1,2026-06-01,Card Purchase 05/29 Su Taqueria El Rey Del Chicago IL Card 3413 - 48.16,48.16,Other,2026-08-12
+175,1,2026-06-01,Card Purchase 05/30 Tst* Jeni's Splendid Ic Chicago IL Card 3413 - 22.43,22.43,Other,2026-08-12
+176,1,2026-06-01,Card Purchase 05/31 Starbucks Store 02223 Chicago IL Card 3413 -4.37,-4.37,Dining Takeout,2026-08-12
+177,1,2026-06-01,Card Purchase With Pin 05/31 Target T-0942 Chicago IL Card 3413 - 40.33,40.33,Shopping,2026-08-12
+178,1,2026-06-01,Card Purchase 06/01 Tst* Small Bar Chicago IL Card 3413 -8.76,-8.76,Dining Takeout,2026-08-12
+179,1,2026-06-01,Card Purchase With Pin 06/01 Target T-0942 Chicago IL Card 3413 - 46.75,46.75,Shopping,2026-08-12
+180,1,2026-06-02,Comcast-Xfinity Cable Svcs PPD ID: 0000213249 -177.47,-177.47,Rent & Utilities,2026-08-12
+181,1,2026-06-02,Card Purchase With Pin 06/02 Target T-0942 Chicago IL Card 3413 - 34.04,34.04,Shopping,2026-08-12
+182,1,2026-06-04,Card Purchase 06/03 Spirits & Snacks Chicago IL Card 3413 - 17.18,17.18,Other,2026-08-12
+183,1,2026-06-04,Recurring Card Purchase 06/03 Spotify USA 877-7781161 NY Card 3413 - 14.32,14.32,Subscriptions,2026-08-12
+184,1,2026-06-04,Card Purchase 06/04 Convenient Food Mart Chicago IL Card 3413 - 18.75,18.75,Other,2026-08-12
+185,1,2026-06-04,Card Purchase 06/04 Gametime Gametime.CO CA Card 3413 -376.00,-376,Other,2026-08-12
+186,1,2026-06-04,Card Purchase With Pin 06/04 Target T-0942 Chicago IL Card 3413 - 51.51,51.51,Shopping,2026-08-12
+187,1,2026-06-08,Card Purchase 06/05 Su Taqueria El Rey Del Chicago IL Card 3413 - 40.92,40.92,Other,2026-08-12
+188,1,2026-06-08,Card Purchase 06/06 Target T-0942 Chicago IL Card 3413 -5.56,-5.56,Shopping,2026-08-12
+189,1,2026-06-08,Card Purchase 06/07 Tst* Old Crow Wrigleyvi Chicago IL Card 3413 -8.98,-8.98,Other,2026-08-12
+190,1,2026-06-08,Card Purchase 06/06 Levy@2Wrigley Field Chicago IL Card 3413 - 56.48,56.48,Other,2026-08-12
+191,1,2026-06-08,Card Purchase 06/06 Levy@2Wrigley Field Chicago IL Card 3413 - 23.11,23.11,Other,2026-08-12
+192,1,2026-06-08,Card Purchase 06/07 Tst* The Stretch Chicago IL Card 3413 - 30.20 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of Account Number: You were not charged a Monthly Service Fee ONE Account was linked,30.2,Other,2026-08-12
+193,1,2026-06-08,Card Purchase With Pin 06/07 Target T-0942 Chicago IL Card 3413 - 60.17,60.17,Shopping,2026-08-12
+194,1,2026-06-08,Card Purchase With Pin 06/08 Target T-0942 Chicago IL Card 3413 - 45.71,45.71,Shopping,2026-08-12
+195,1,2026-06-09,Card Purchase With Pin 06/09 Target T-0942 Chicago IL Card 3413 - 33.53,33.53,Shopping,2026-08-12
+196,1,2026-06-10,Subscription Acorns Cqr7J9 Web ID: 9000142694 -3.00,-3,Subscriptions,2026-08-12
+197,1,2026-06-10,Card Purchase With Pin 06/10 Target T-0942 Chicago IL Card 3413 - 21.38,21.38,Shopping,2026-08-12
+198,1,2026-06-12,Coyote Logistics Payments PPD ID: 9086732000,2478.34,Other,2026-08-12
+199,1,2026-06-12,Venmo Cashout PPD ID: 5264681992,2678.34,Other,2026-08-12
+200,1,2026-06-12,Venmo Cashout PPD ID: 5264681992,2772.34,Other,2026-08-12
+201,1,2026-06-12,Card Purchase 06/11 Regal City North 1789 Chicago IL Card 3413 - 32.08,32.08,Other,2026-08-12
+202,1,2026-06-15,Online Transfer From Sav ...4385 Transaction#: 29614057767,2766.13,Other,2026-08-12
+203,1,2026-06-15,Card Purchase 06/12 Spirits & Snacks Chicago IL Card 3413 - 13.44,13.44,Other,2026-08-12
+204,1,2026-06-15,Card Purchase 06/12 Tst*Texan Taco Bar Chicago IL Card 3413 - 85.38,85.38,Dining Takeout,2026-08-12
+205,1,2026-06-15,Card Purchase 06/13 Chipotle 1244 Chicago IL Card 3413 - 14.84,14.84,Dining Takeout,2026-08-12
+206,1,2026-06-15,Card Purchase 06/13 Spirits & Snacks Chicago IL Card 3413 - 11.61,11.61,Other,2026-08-12
+207,1,2026-06-15,Card Purchase 06/14 Tst* Frank And Mary's T Chicago IL Card 3413 -7.66,-7.66,Other,2026-08-12
+208,1,2026-06-15,Recurring Card Purchase 06/14 LA Fitness 949-255-8100 CA Card 3413 - 39.99,39.99,Health & Fitness,2026-08-12
+209,1,2026-06-15,Card Purchase With Pin 06/14 Target T-0942 Chicago IL Card 3413 - 64.00,64,Shopping,2026-08-12
+210,1,2026-06-15,Card Purchase With Pin 06/15 Target T-0942 Chicago IL Card 3413 - 47.61,47.61,Shopping,2026-08-12
+211,1,2026-06-16,Recurring Card Purchase 06/16 Scrimba Oslo Card 3413 - 30.00,30,Other,2026-08-12
+212,1,2026-06-16,Card Purchase 06/16 Www.Logoai.Com Logoai.Com VA Card 3413 - 29.00,29,Other,2026-08-12
+213,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+214,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+215,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 - 29.99,29.99,Other,2026-08-12
+216,1,2026-06-16,"Check # 4151 -995.00 on your CHASE TOTAL CHECKING account since you had of the following during the monthly statement period: in qualifying electronic deposits; or statement) average beginning day balance in this account, or in combination with any other linked qualifying personal deposits or investments; or to a qualifying checking account TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. chase.com/disclosures For more information about the qualifying accounts, deposits, investments or transactions to waive the Monthly Service Fee on this account (if applicable), or if you have any questions, please refer to the Additional Banking Services and Fees at or call us at the number listed on this statement. *start*post transaction detail message *end*post transaction detail message *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",-995,Other,2026-08-12
+217,1,2026-06-17,Comed Payments PPD ID: 2360938600 -16.77,-16.77,Other,2026-08-12
+218,1,2026-06-17,Card Purchase With Pin 06/17 Target T-0942 Chicago IL Card 3413 -28.04,-28.04,Shopping,2026-08-12
+219,1,2026-06-18,Card Purchase 06/17 Spirits & Snacks Chicago IL Card 3413 -28.10,-28.1,Other,2026-08-12
+220,1,2026-06-18,Card Purchase 06/17 Metro + Smartbar 800-514-3849 NC Card 3413 -88.35,-88.35,Transport,2026-08-12
+221,1,2026-06-18,Card Purchase With Pin 06/18 Target T-0942 Chicago IL Card 3413 -44.71,-44.71,Shopping,2026-08-12
+222,1,2026-06-22,Card Purchase 06/17 Levy@ 1C United Cntr C Chicago IL Card 3413 -40.49,-40.49,Other,2026-08-12
+223,1,2026-06-22,Card Purchase 06/19 Emporium Logan Square Chicago IL Card 3413 -10.00,-10,Other,2026-08-12
+224,1,2026-06-22,Card Purchase 06/20 Spirits & Snacks Chicago IL Card 3413 -14.66,-14.66,Other,2026-08-12
+225,1,2026-06-22,Card Purchase 06/21 Tst* Paradise Park Chicago IL Card 3413 -130.80,-130.8,Other,2026-08-12
+226,1,2026-06-22,Card Purchase 06/21 Spirits & Snacks Chicago IL Card 3413 -10.70,-10.7,Other,2026-08-12
+227,1,2026-06-22,Card Purchase With Pin 06/22 Target T-0942 Chicago IL Card 3413 -51.77,-51.77,Shopping,2026-08-12
+228,1,2026-06-23,Online Transfer From Sav ...4385 Transaction#: 29734765777,635.73,Other,2026-08-12
+229,1,2026-06-23,Card Purchase 06/22 Spirits & Snacks Chicago IL Card 3413 -10.92,-10.92,Other,2026-08-12
+230,1,2026-06-23,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+231,1,2026-06-23,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+232,1,2026-06-23,Card Purchase With Pin 06/23 Target T-0942 Chicago IL Card 3413 -45.22 CHECKING SUMMARY TRANSACTION DETAIL *start*summary *end*summary *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-45.22,Shopping,2026-08-12
+233,1,2026-06-25,Online Transfer From Sav ...4385 Transaction#: 29758734717,292.07,Other,2026-08-12
+234,1,2026-06-25,Card Purchase 06/25 Tst* Frank And Mary's T Chicago IL Card 3413 - 39.30,39.3,Other,2026-08-12
+235,1,2026-06-25,Peoples Gas Autopay PPD ID: 4361613900 - 41.74,41.74,Rent & Utilities,2026-08-12
+236,1,2026-06-25,Card Purchase With Pin 06/25 Target T-0942 Chicago IL Card 3413 - 28.20,28.2,Shopping,2026-08-12
+237,1,2026-06-26,Coyote Logistics Payments PPD ID: 9086732000,1968,Other,2026-08-12
+238,1,2026-06-26,Venmo Cashout PPD ID: 5264681992,1993,Other,2026-08-12
+239,1,2026-06-26,Card Purchase 06/26 Tst* Frank And Mary's T Chicago IL Card 3413 - 22.98,22.98,Other,2026-08-12
+240,1,2026-06-29,Card Purchase 06/26 Spirits & Snacks Chicago IL Card 3413 - 16.98,16.98,Other,2026-08-12
+241,1,2026-06-29,Card Purchase 06/26 Spirits & Snacks Chicago IL Card 3413 - 14.66,14.66,Other,2026-08-12
+242,1,2026-06-29,Dept Education Student Ln PPD ID: 9102002601 -187.99,-187.99,Other,2026-08-12
+243,1,2026-06-29,Card Purchase With Pin 06/27 Target T-0942 Chicago IL Card 3413 - 55.50,55.5,Shopping,2026-08-12
+244,1,2026-06-29,Card Purchase With Pin 06/29 Target T-0942 Chicago IL Card 3413 - 65.02,65.02,Shopping,2026-08-12
+245,1,2026-06-30,Card Purchase 06/30 Customink LLC 800-293-4232 VA Card 3413 -134.38,-134.38,Other,2026-08-12
+246,1,2026-06-30,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+247,1,2026-06-30,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+248,1,2026-06-30,Card Purchase 06/30 Fanduelsbkprimary 9717083015 NJ Card 3413 - 20.00,20,Other,2026-08-12
+249,1,2026-06-30,Venmo Payment 1051352252813 Web ID: 3264681992 - 80.00,80,Other,2026-08-12
+250,1,2026-07-01,Card Purchase 06/30 Spirits & Snacks Chicago IL Card 3413 - 20.61,20.61,Other,2026-08-12
+251,1,2026-07-01,Card Purchase 07/01 Tst* Frank And Mary's T Chicago IL Card 3413 -7.66,-7.66,Other,2026-08-12
+252,1,2026-07-01,Card Purchase 07/01 Sq *Mr. Taco's Restaura Chicago IL Card 3413 -8.76,-8.76,Other,2026-08-12
+253,1,2026-07-02,Online Transfer From Sav ...4385 Transaction#: 29862240857,1584.43,Other,2026-08-12
+254,1,2026-07-02,Chase Crd Autopay PPD ID: 4760039224 -526.34,-526.34,Other,2026-08-12
+255,1,2026-07-02,Venmo Payment 1051393607869 Web ID: 3264681992 - 35.00,35,Other,2026-08-12
+256,1,2026-07-02,Comcast-Xfinity Cable Svcs PPD ID: 0000213249 -177.47,-177.47,Rent & Utilities,2026-08-12
+257,1,2026-07-02,Card Purchase With Pin 07/02 Target T-0942 Chicago IL Card 3413 - 55.67,55.67,Shopping,2026-08-12
+258,1,2026-07-06,Card Purchase 07/02 Emporium Logan Square Chicago IL Card 3413 - 18.00,18,Other,2026-08-12
+259,1,2026-07-06,Recurring Card Purchase 07/03 Spotify USA 877-7781161 NY Card 3413 - 14.32,14.32,Subscriptions,2026-08-12
+260,1,2026-07-06,Card Purchase 07/03 Tst*Npk Hospitality Off Chicago IL Card 3413 - 31.36,31.36,Health & Fitness,2026-08-12
+261,1,2026-07-06,Card Purchase 07/03 Regal City North 1789 Chicago IL Card 3413 - 14.38 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of Account Number:,14.38,Other,2026-08-12
+262,1,2026-07-06,Card Purchase 07/04 Spirits & Snacks Chicago IL Card 3413 - 37.97,37.97,Other,2026-08-12
+263,1,2026-07-06,Card Purchase With Pin 07/05 Target T-0942 Chicago IL Card 3413 - 43.26,43.26,Shopping,2026-08-12
+264,1,2026-07-06,Card Purchase With Pin 07/06 Target T-0942 Chicago IL Card 3413 - 21.52,21.52,Shopping,2026-08-12
+265,1,2026-07-07,Card Purchase 07/06 Spirits & Snacks Chicago IL Card 3413 - 13.44,13.44,Other,2026-08-12
+266,1,2026-07-07,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+267,1,2026-07-07,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+268,1,2026-07-07,Venmo Payment 1051505968240 Web ID: 3264681992 - 55.00,55,Other,2026-08-12
+269,1,2026-07-07,Venmo Payment 1051528332501 Web ID: 3264681992 - 80.00,80,Other,2026-08-12
+270,1,2026-07-08,Online Transfer From Sav ...4385 Transaction#: 29926326592,1083.97,Other,2026-08-12
+271,1,2026-07-08,Card Purchase 07/07 Spirits & Snacks Chicago IL Card 3413 - 19.14,19.14,Other,2026-08-12
+272,1,2026-07-08,Card Purchase 07/08 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+273,1,2026-07-08,Card Purchase 07/08 Tst* Ludlow Liquors Chicago IL Card 3413 - 19.11,19.11,Other,2026-08-12
+274,1,2026-07-09,Venmo Cashout PPD ID: 5264681992,1115.66,Other,2026-08-12
+275,1,2026-07-09,Card Purchase 07/09 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+276,1,2026-07-09,Card Purchase With Pin 07/09 Target T-0942 Chicago IL Card 3413 - 92.36,92.36,Shopping,2026-08-12
+277,1,2026-07-09,Venmo Payment 1051573514696 Web ID: 3264681992 - 31.00,31,Other,2026-08-12
+278,1,2026-07-10,Coyote Logistics Payments PPD ID: 9086732000,2487.74,Other,2026-08-12
+279,1,2026-07-10,Card Purchase 07/09 Reckless Records Wp Chicago IL Card 3413 - 50.69,50.69,Other,2026-08-12
+280,1,2026-07-10,Subscription Acorns Tfw2N9 Web ID: 9000142694 -3.00,-3,Subscriptions,2026-08-12
+281,1,2026-07-13,Card Purchase 07/10 Spirits & Snacks Chicago IL Card 3413 - 26.99,26.99,Other,2026-08-12
+282,1,2026-07-13,Card Purchase 07/11 Barra N Chicago IL Card 3413 - 15.01,15.01,Dining Takeout,2026-08-12
+283,1,2026-07-13,Card Purchase 07/12 Target T-3214 Chicago IL Card 3413 -3.27,-3.27,Shopping,2026-08-12
+284,1,2026-07-13,Card Purchase With Pin 07/12 Target T-0942 Chicago IL Card 3413 - 81.58,81.58,Shopping,2026-08-12
+285,1,2026-07-13,Venmo Payment 1051613843292 Web ID: 3264681992 - 15.00,15,Other,2026-08-12
+286,1,2026-07-14,Card Purchase 07/13 Spirits & Snacks Chicago IL Card 3413 -6.10,-6.1,Other,2026-08-12
+287,1,2026-07-14,Recurring Card Purchase 07/14 LA Fitness 949-255-8100 CA Card 3413 - 39.99,39.99,Health & Fitness,2026-08-12
+288,1,2026-07-14,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+289,1,2026-07-14,Robinhood Funds 892953134 Web ID: 1464364776 - 50.00,50,Other,2026-08-12
+290,1,2026-07-15,"Card Purchase 07/15 Tst* Rizzo's Bar & Inn Chicago IL Card 3413 - 87.10 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. You were not charged a Monthly Service Fee ONE Account was linked chase.com/disclosures",87.1,Dining Takeout,2026-08-12
+291,1,2026-07-15,Card Purchase With Pin 07/15 Target T-0942 Chicago IL Card 3413 - 39.52,39.52,Shopping,2026-08-12
+292,1,2026-07-16,Card Purchase 07/14 Levy@2Wrigley Field Chicago IL Card 3413 - 48.79,48.79,Other,2026-08-12
+293,1,2026-07-16,Card Purchase 07/15 Spirits & Snacks Chicago IL Card 3413 -9.93,-9.93,Other,2026-08-12
+294,1,2026-07-16,Card Purchase 07/16 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+295,1,2026-07-16,Recurring Card Purchase 07/16 Scrimba Oslo Card 3413 - 30.00,30,Other,2026-08-12
+296,1,2026-07-16,"Comed Payments PPD ID: 2360938600 - 16.92 on your CHASE TOTAL CHECKING account since you had of the following during the monthly statement period: in qualifying electronic deposits; or statement) average beginning day balance in this account, or in combination with any other linked qualifying personal deposits or investments; or to a qualifying checking account For more information about the qualifying accounts, deposits, investments or transactions to waive the Monthly Service Fee on this account (if applicable), or if you have any questions, please refer to the Additional Banking Services and Fees at or call us at the number listed on this statement. TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",16.92,Other,2026-08-12
+297,1,2026-06-16,"Bank transaction If you see a check description in the Transaction Detail section, it means your check has already been converted for electronic payment. Because of this, we're not able to return the check to you or show you an image on Chase.com. ^ An image of this check may be available for you to view on Chase.com.",995,Other,2026-08-12
+298,1,2026-05-19,Robinhood Funds 892953134 Web ID: 1464364776 -27.14,-27.14,Other,2026-08-12
+299,1,2026-05-20,Robinhood Funds 892953134 Web ID: 1464364776 -25.00,-25,Other,2026-08-12
+300,1,2026-05-20,Robinhood Funds 892953134 Web ID: 1464364776 -25.00,-25,Other,2026-08-12
+301,1,2026-05-20,Card Purchase With Pin 05/20 Target T-0942 Chicago IL Card 3413 -37.70,-37.7,Shopping,2026-08-12
+302,1,2026-05-21,Card Purchase 05/20 Spirits & Snacks Chicago IL Card 3413 - 9.91,9.91,Other,2026-08-12
+303,1,2026-05-21,Card Purchase With Pin 05/21 Target T-0942 Chicago IL Card 3413 -29.39,-29.39,Shopping,2026-08-12
+304,1,2026-05-22,Coyote Logistics Payments PPD ID: 9086732000,1764.71,Other,2026-08-12
+305,1,2026-05-22,05/22 Online Transfer To Sav ...4385 Transaction#: 29319434507 -500.00,-500,Other,2026-08-12
+306,1,2026-05-22,Card Purchase With Pin 05/22 Target T-0942 Chicago IL Card 3413 -43.44 CHECKING SUMMARY CHECKS PAID TRANSACTION DETAIL *start*summary *end*summary *start*checks paid section2 *end*checks paid section2 *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-43.44,Shopping,2026-08-12
+307,1,2026-05-26,Robinhood Funds 892953134 Web ID: 1464364776 - 10.00,10,Other,2026-08-12
+308,1,2026-05-26,Card Purchase 05/24 Tst* Cody S Public Hous Chicago IL Card 3413 - 26.16,26.16,Other,2026-08-12
+309,1,2026-05-26,Card Purchase 05/24 Sq *Hexe Coffee CO. Chicago IL Card 3413 -7.09,-7.09,Other,2026-08-12
+310,1,2026-05-26,Card Purchase With Pin 05/24 Target T-0942 Chicago IL Card 3413 - 32.06,32.06,Shopping,2026-08-12
+311,1,2026-05-26,Card Purchase 05/24 Spirits & Snacks Chicago IL Card 3413 -7.07,-7.07,Other,2026-08-12
+312,1,2026-05-26,Card Purchase 05/25 Target 00009423 Chicago IL Card 3413 -4.64,-4.64,Shopping,2026-08-12
+313,1,2026-05-26,Card Purchase 05/26 Tst* Frank And Mary's T Chicago IL Card 3413 - 10.86,10.86,Other,2026-08-12
+314,1,2026-05-26,Card Purchase With Pin 05/26 Target T-0942 Chicago IL Card 3413 - 62.85,62.85,Shopping,2026-08-12
+315,1,2026-05-27,Card Purchase 05/27 Tst* Frank And Mary's T Chicago IL Card 3413 - 10.86,10.86,Other,2026-08-12
+316,1,2026-05-27,Dept Education Student Ln PPD ID: 9102002601 -187.99,-187.99,Other,2026-08-12
+317,1,2026-05-27,Peoples Gas Autopay PPD ID: 4361613900 - 54.07,54.07,Rent & Utilities,2026-08-12
+318,1,2026-05-27,Robinhood Funds 892953134 Web ID: 1464364776 - 25.00,25,Other,2026-08-12
+319,1,2026-05-27,Card Purchase With Pin 05/27 Target T-0942 Chicago IL Card 3413 - 31.97,31.97,Shopping,2026-08-12
+320,1,2026-05-29,Coyote Logistics Payments PPD ID: 9086732000,2234.39,Other,2026-08-12
+321,1,2026-06-01,Card Purchase 05/29 Spirits & Snacks Chicago IL Card 3413 - 19.28,19.28,Other,2026-08-12
+322,1,2026-06-01,Card Purchase 05/29 Su Taqueria El Rey Del Chicago IL Card 3413 - 48.16,48.16,Other,2026-08-12
+323,1,2026-06-01,Card Purchase 05/30 Tst* Jeni's Splendid Ic Chicago IL Card 3413 - 22.43,22.43,Other,2026-08-12
+324,1,2026-06-01,Card Purchase 05/31 Starbucks Store 02223 Chicago IL Card 3413 -4.37,-4.37,Dining Takeout,2026-08-12
+325,1,2026-06-01,Card Purchase With Pin 05/31 Target T-0942 Chicago IL Card 3413 - 40.33,40.33,Shopping,2026-08-12
+326,1,2026-06-01,Card Purchase 06/01 Tst* Small Bar Chicago IL Card 3413 -8.76,-8.76,Dining Takeout,2026-08-12
+327,1,2026-06-01,Card Purchase With Pin 06/01 Target T-0942 Chicago IL Card 3413 - 46.75,46.75,Shopping,2026-08-12
+328,1,2026-06-02,Comcast-Xfinity Cable Svcs PPD ID: 0000213249 -177.47,-177.47,Rent & Utilities,2026-08-12
+329,1,2026-06-02,Card Purchase With Pin 06/02 Target T-0942 Chicago IL Card 3413 - 34.04,34.04,Shopping,2026-08-12
+330,1,2026-06-04,Card Purchase 06/03 Spirits & Snacks Chicago IL Card 3413 - 17.18,17.18,Other,2026-08-12
+331,1,2026-06-04,Recurring Card Purchase 06/03 Spotify USA 877-7781161 NY Card 3413 - 14.32,14.32,Subscriptions,2026-08-12
+332,1,2026-06-04,Card Purchase 06/04 Convenient Food Mart Chicago IL Card 3413 - 18.75,18.75,Other,2026-08-12
+333,1,2026-06-04,Card Purchase 06/04 Gametime Gametime.CO CA Card 3413 -376.00,-376,Other,2026-08-12
+334,1,2026-06-04,Card Purchase With Pin 06/04 Target T-0942 Chicago IL Card 3413 - 51.51,51.51,Shopping,2026-08-12
+335,1,2026-06-08,Card Purchase 06/05 Su Taqueria El Rey Del Chicago IL Card 3413 - 40.92,40.92,Other,2026-08-12
+336,1,2026-06-08,Card Purchase 06/06 Target T-0942 Chicago IL Card 3413 -5.56,-5.56,Shopping,2026-08-12
+337,1,2026-06-08,Card Purchase 06/07 Tst* Old Crow Wrigleyvi Chicago IL Card 3413 -8.98,-8.98,Other,2026-08-12
+338,1,2026-06-08,Card Purchase 06/06 Levy@2Wrigley Field Chicago IL Card 3413 - 56.48,56.48,Other,2026-08-12
+339,1,2026-06-08,Card Purchase 06/06 Levy@2Wrigley Field Chicago IL Card 3413 - 23.11,23.11,Other,2026-08-12
+340,1,2026-06-08,Card Purchase 06/07 Tst* The Stretch Chicago IL Card 3413 - 30.20 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of Account Number: You were not charged a Monthly Service Fee ONE Account was linked,30.2,Other,2026-08-12
+341,1,2026-06-08,Card Purchase With Pin 06/07 Target T-0942 Chicago IL Card 3413 - 60.17,60.17,Shopping,2026-08-12
+342,1,2026-06-08,Card Purchase With Pin 06/08 Target T-0942 Chicago IL Card 3413 - 45.71,45.71,Shopping,2026-08-12
+343,1,2026-06-09,Card Purchase With Pin 06/09 Target T-0942 Chicago IL Card 3413 - 33.53,33.53,Shopping,2026-08-12
+344,1,2026-06-10,Subscription Acorns Cqr7J9 Web ID: 9000142694 -3.00,-3,Subscriptions,2026-08-12
+345,1,2026-06-10,Card Purchase With Pin 06/10 Target T-0942 Chicago IL Card 3413 - 21.38,21.38,Shopping,2026-08-12
+346,1,2026-06-12,Coyote Logistics Payments PPD ID: 9086732000,2478.34,Other,2026-08-12
+347,1,2026-06-12,Venmo Cashout PPD ID: 5264681992,2678.34,Other,2026-08-12
+348,1,2026-06-12,Venmo Cashout PPD ID: 5264681992,2772.34,Other,2026-08-12
+349,1,2026-06-12,Card Purchase 06/11 Regal City North 1789 Chicago IL Card 3413 - 32.08,32.08,Other,2026-08-12
+350,1,2026-06-15,Online Transfer From Sav ...4385 Transaction#: 29614057767,2766.13,Other,2026-08-12
+351,1,2026-06-15,Card Purchase 06/12 Spirits & Snacks Chicago IL Card 3413 - 13.44,13.44,Other,2026-08-12
+352,1,2026-06-15,Card Purchase 06/12 Tst*Texan Taco Bar Chicago IL Card 3413 - 85.38,85.38,Dining Takeout,2026-08-12
+353,1,2026-06-15,Card Purchase 06/13 Chipotle 1244 Chicago IL Card 3413 - 14.84,14.84,Dining Takeout,2026-08-12
+354,1,2026-06-15,Card Purchase 06/13 Spirits & Snacks Chicago IL Card 3413 - 11.61,11.61,Other,2026-08-12
+355,1,2026-06-15,Card Purchase 06/14 Tst* Frank And Mary's T Chicago IL Card 3413 -7.66,-7.66,Other,2026-08-12
+356,1,2026-06-15,Recurring Card Purchase 06/14 LA Fitness 949-255-8100 CA Card 3413 - 39.99,39.99,Health & Fitness,2026-08-12
+357,1,2026-06-15,Card Purchase With Pin 06/14 Target T-0942 Chicago IL Card 3413 - 64.00,64,Shopping,2026-08-12
+358,1,2026-06-15,Card Purchase With Pin 06/15 Target T-0942 Chicago IL Card 3413 - 47.61,47.61,Shopping,2026-08-12
+359,1,2026-06-16,Recurring Card Purchase 06/16 Scrimba Oslo Card 3413 - 30.00,30,Other,2026-08-12
+360,1,2026-06-16,Card Purchase 06/16 Www.Logoai.Com Logoai.Com VA Card 3413 - 29.00,29,Other,2026-08-12
+361,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+362,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+363,1,2026-06-16,Robinhood Funds 892953134 Web ID: 1464364776 - 29.99,29.99,Other,2026-08-12
+364,1,2026-06-16,"Check # 4151 -995.00 on your CHASE TOTAL CHECKING account since you had of the following during the monthly statement period: in qualifying electronic deposits; or statement) average beginning day balance in this account, or in combination with any other linked qualifying personal deposits or investments; or to a qualifying checking account TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. chase.com/disclosures For more information about the qualifying accounts, deposits, investments or transactions to waive the Monthly Service Fee on this account (if applicable), or if you have any questions, please refer to the Additional Banking Services and Fees at or call us at the number listed on this statement. *start*post transaction detail message *end*post transaction detail message *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",-995,Other,2026-08-12
+365,1,2026-06-17,Comed Payments PPD ID: 2360938600 -16.77,-16.77,Other,2026-08-12
+366,1,2026-06-17,Card Purchase With Pin 06/17 Target T-0942 Chicago IL Card 3413 -28.04,-28.04,Shopping,2026-08-12
+367,1,2026-06-18,Card Purchase 06/17 Spirits & Snacks Chicago IL Card 3413 -28.10,-28.1,Other,2026-08-12
+368,1,2026-06-18,Card Purchase 06/17 Metro + Smartbar 800-514-3849 NC Card 3413 -88.35,-88.35,Transport,2026-08-12
+369,1,2026-06-18,Card Purchase With Pin 06/18 Target T-0942 Chicago IL Card 3413 -44.71,-44.71,Shopping,2026-08-12
+370,1,2026-06-22,Card Purchase 06/17 Levy@ 1C United Cntr C Chicago IL Card 3413 -40.49,-40.49,Other,2026-08-12
+371,1,2026-06-22,Card Purchase 06/19 Emporium Logan Square Chicago IL Card 3413 -10.00,-10,Other,2026-08-12
+372,1,2026-06-22,Card Purchase 06/20 Spirits & Snacks Chicago IL Card 3413 -14.66,-14.66,Other,2026-08-12
+373,1,2026-06-22,Card Purchase 06/21 Tst* Paradise Park Chicago IL Card 3413 -130.80,-130.8,Other,2026-08-12
+374,1,2026-06-22,Card Purchase 06/21 Spirits & Snacks Chicago IL Card 3413 -10.70,-10.7,Other,2026-08-12
+375,1,2026-06-22,Card Purchase With Pin 06/22 Target T-0942 Chicago IL Card 3413 -51.77,-51.77,Shopping,2026-08-12
+376,1,2026-06-23,Online Transfer From Sav ...4385 Transaction#: 29734765777,635.73,Other,2026-08-12
+377,1,2026-06-23,Card Purchase 06/22 Spirits & Snacks Chicago IL Card 3413 -10.92,-10.92,Other,2026-08-12
+378,1,2026-06-23,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+379,1,2026-06-23,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+380,1,2026-06-23,Card Purchase With Pin 06/23 Target T-0942 Chicago IL Card 3413 -45.22 CHECKING SUMMARY TRANSACTION DETAIL *start*summary *end*summary *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-45.22,Shopping,2026-08-12
+381,1,2026-06-25,Online Transfer From Sav ...4385 Transaction#: 29758734717,292.07,Other,2026-08-12
+382,1,2026-06-25,Card Purchase 06/25 Tst* Frank And Mary's T Chicago IL Card 3413 - 39.30,39.3,Other,2026-08-12
+383,1,2026-06-25,Peoples Gas Autopay PPD ID: 4361613900 - 41.74,41.74,Rent & Utilities,2026-08-12
+384,1,2026-06-25,Card Purchase With Pin 06/25 Target T-0942 Chicago IL Card 3413 - 28.20,28.2,Shopping,2026-08-12
+385,1,2026-06-26,Coyote Logistics Payments PPD ID: 9086732000,1968,Other,2026-08-12
+386,1,2026-06-26,Venmo Cashout PPD ID: 5264681992,1993,Other,2026-08-12
+387,1,2026-06-26,Card Purchase 06/26 Tst* Frank And Mary's T Chicago IL Card 3413 - 22.98,22.98,Other,2026-08-12
+388,1,2026-06-29,Card Purchase 06/26 Spirits & Snacks Chicago IL Card 3413 - 16.98,16.98,Other,2026-08-12
+389,1,2026-06-29,Card Purchase 06/26 Spirits & Snacks Chicago IL Card 3413 - 14.66,14.66,Other,2026-08-12
+390,1,2026-06-29,Dept Education Student Ln PPD ID: 9102002601 -187.99,-187.99,Other,2026-08-12
+391,1,2026-06-29,Card Purchase With Pin 06/27 Target T-0942 Chicago IL Card 3413 - 55.50,55.5,Shopping,2026-08-12
+392,1,2026-06-29,Card Purchase With Pin 06/29 Target T-0942 Chicago IL Card 3413 - 65.02,65.02,Shopping,2026-08-12
+393,1,2026-06-30,Card Purchase 06/30 Customink LLC 800-293-4232 VA Card 3413 -134.38,-134.38,Other,2026-08-12
+394,1,2026-06-30,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+395,1,2026-06-30,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+396,1,2026-06-30,Card Purchase 06/30 Fanduelsbkprimary 9717083015 NJ Card 3413 - 20.00,20,Other,2026-08-12
+397,1,2026-06-30,Venmo Payment 1051352252813 Web ID: 3264681992 - 80.00,80,Other,2026-08-12
+398,1,2026-07-01,Card Purchase 06/30 Spirits & Snacks Chicago IL Card 3413 - 20.61,20.61,Other,2026-08-12
+399,1,2026-07-01,Card Purchase 07/01 Tst* Frank And Mary's T Chicago IL Card 3413 -7.66,-7.66,Other,2026-08-12
+400,1,2026-07-01,Card Purchase 07/01 Sq *Mr. Taco's Restaura Chicago IL Card 3413 -8.76,-8.76,Other,2026-08-12
+401,1,2026-07-02,Online Transfer From Sav ...4385 Transaction#: 29862240857,1584.43,Other,2026-08-12
+402,1,2026-07-02,Chase Crd Autopay PPD ID: 4760039224 -526.34,-526.34,Other,2026-08-12
+403,1,2026-07-02,Venmo Payment 1051393607869 Web ID: 3264681992 - 35.00,35,Other,2026-08-12
+404,1,2026-07-02,Comcast-Xfinity Cable Svcs PPD ID: 0000213249 -177.47,-177.47,Rent & Utilities,2026-08-12
+405,1,2026-07-02,Card Purchase With Pin 07/02 Target T-0942 Chicago IL Card 3413 - 55.67,55.67,Shopping,2026-08-12
+406,1,2026-07-06,Card Purchase 07/02 Emporium Logan Square Chicago IL Card 3413 - 18.00,18,Other,2026-08-12
+407,1,2026-07-06,Recurring Card Purchase 07/03 Spotify USA 877-7781161 NY Card 3413 - 14.32,14.32,Subscriptions,2026-08-12
+408,1,2026-07-06,Card Purchase 07/03 Tst*Npk Hospitality Off Chicago IL Card 3413 - 31.36,31.36,Health & Fitness,2026-08-12
+409,1,2026-07-06,Card Purchase 07/03 Regal City North 1789 Chicago IL Card 3413 - 14.38 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of Account Number:,14.38,Other,2026-08-12
+410,1,2026-07-06,Card Purchase 07/04 Spirits & Snacks Chicago IL Card 3413 - 37.97,37.97,Other,2026-08-12
+411,1,2026-07-06,Card Purchase With Pin 07/05 Target T-0942 Chicago IL Card 3413 - 43.26,43.26,Shopping,2026-08-12
+412,1,2026-07-06,Card Purchase With Pin 07/06 Target T-0942 Chicago IL Card 3413 - 21.52,21.52,Shopping,2026-08-12
+413,1,2026-07-07,Card Purchase 07/06 Spirits & Snacks Chicago IL Card 3413 - 13.44,13.44,Other,2026-08-12
+414,1,2026-07-07,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+415,1,2026-07-07,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+416,1,2026-07-07,Venmo Payment 1051505968240 Web ID: 3264681992 - 55.00,55,Other,2026-08-12
+417,1,2026-07-07,Venmo Payment 1051528332501 Web ID: 3264681992 - 80.00,80,Other,2026-08-12
+418,1,2026-07-08,Online Transfer From Sav ...4385 Transaction#: 29926326592,1083.97,Other,2026-08-12
+419,1,2026-07-08,Card Purchase 07/07 Spirits & Snacks Chicago IL Card 3413 - 19.14,19.14,Other,2026-08-12
+420,1,2026-07-08,Card Purchase 07/08 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+421,1,2026-07-08,Card Purchase 07/08 Tst* Ludlow Liquors Chicago IL Card 3413 - 19.11,19.11,Other,2026-08-12
+422,1,2026-07-09,Venmo Cashout PPD ID: 5264681992,1115.66,Other,2026-08-12
+423,1,2026-07-09,Card Purchase 07/09 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+424,1,2026-07-09,Card Purchase With Pin 07/09 Target T-0942 Chicago IL Card 3413 - 92.36,92.36,Shopping,2026-08-12
+425,1,2026-07-09,Venmo Payment 1051573514696 Web ID: 3264681992 - 31.00,31,Other,2026-08-12
+426,1,2026-07-10,Coyote Logistics Payments PPD ID: 9086732000,2487.74,Other,2026-08-12
+427,1,2026-07-10,Card Purchase 07/09 Reckless Records Wp Chicago IL Card 3413 - 50.69,50.69,Other,2026-08-12
+428,1,2026-07-10,Subscription Acorns Tfw2N9 Web ID: 9000142694 -3.00,-3,Subscriptions,2026-08-12
+429,1,2026-07-13,Card Purchase 07/10 Spirits & Snacks Chicago IL Card 3413 - 26.99,26.99,Other,2026-08-12
+430,1,2026-07-13,Card Purchase 07/11 Barra N Chicago IL Card 3413 - 15.01,15.01,Dining Takeout,2026-08-12
+431,1,2026-07-13,Card Purchase 07/12 Target T-3214 Chicago IL Card 3413 -3.27,-3.27,Shopping,2026-08-12
+432,1,2026-07-13,Card Purchase With Pin 07/12 Target T-0942 Chicago IL Card 3413 - 81.58,81.58,Shopping,2026-08-12
+433,1,2026-07-13,Venmo Payment 1051613843292 Web ID: 3264681992 - 15.00,15,Other,2026-08-12
+434,1,2026-07-14,Card Purchase 07/13 Spirits & Snacks Chicago IL Card 3413 -6.10,-6.1,Other,2026-08-12
+435,1,2026-07-14,Recurring Card Purchase 07/14 LA Fitness 949-255-8100 CA Card 3413 - 39.99,39.99,Health & Fitness,2026-08-12
+436,1,2026-07-14,Robinhood Funds 892953134 Web ID: 1464364776 -175.00,-175,Other,2026-08-12
+437,1,2026-07-14,Robinhood Funds 892953134 Web ID: 1464364776 - 50.00,50,Other,2026-08-12
+438,1,2026-07-15,"Card Purchase 07/15 Tst* Rizzo's Bar & Inn Chicago IL Card 3413 - 87.10 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. You were not charged a Monthly Service Fee ONE Account was linked chase.com/disclosures",87.1,Dining Takeout,2026-08-12
+439,1,2026-07-15,Card Purchase With Pin 07/15 Target T-0942 Chicago IL Card 3413 - 39.52,39.52,Shopping,2026-08-12
+440,1,2026-07-16,Card Purchase 07/14 Levy@2Wrigley Field Chicago IL Card 3413 - 48.79,48.79,Other,2026-08-12
+441,1,2026-07-16,Card Purchase 07/15 Spirits & Snacks Chicago IL Card 3413 -9.93,-9.93,Other,2026-08-12
+442,1,2026-07-16,Card Purchase 07/16 Craigslist.Org 415-399-5200 CA Card 3413 -5.00,-5,Other,2026-08-12
+443,1,2026-07-16,Recurring Card Purchase 07/16 Scrimba Oslo Card 3413 - 30.00,30,Other,2026-08-12
+444,1,2026-07-16,"Comed Payments PPD ID: 2360938600 - 16.92 on your CHASE TOTAL CHECKING account since you had of the following during the monthly statement period: in qualifying electronic deposits; or statement) average beginning day balance in this account, or in combination with any other linked qualifying personal deposits or investments; or to a qualifying checking account For more information about the qualifying accounts, deposits, investments or transactions to waive the Monthly Service Fee on this account (if applicable), or if you have any questions, please refer to the Additional Banking Services and Fees at or call us at the number listed on this statement. TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",16.92,Other,2026-08-12

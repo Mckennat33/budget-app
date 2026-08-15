@@ -100,15 +100,48 @@ function normalizeAmount(rawAmount) {
   return negative ? -Math.abs(value) : value;
 }
 
+// Movements between the user's own accounts are not income or spending. Tagging them
+// here keeps them out of both totals (they are excluded from the overview queries) and
+// out of the category breakdown, which only lists the eight spending categories.
+const TRANSFER_PATTERN = /\btransfer\s+(from|to)\b|venmo\s+cashout|\bzelle\b|\bwire\s+transfer\b/i;
+
+function isTransfer(description) {
+  return TRANSFER_PATTERN.test(description || '');
+}
+
+// Raw statement lines carry processor noise ("Card Purchase 05/27 ... Card 3413",
+// "PPD ID: 9086732000"). Strip it so the category drill-down reads as merchant names.
+function prettyDescription(description) {
+  if (!description) return 'Transaction';
+  const text = String(description)
+    .replace(/^(recurring\s+)?card purchase(\s+with pin)?\s*/i, '')
+    .replace(/^\d{1,2}\/\d{1,2}\s*/, '')
+    .replace(/\s*card\s+\d{4}\b.*$/i, '')
+    .replace(/\s*(ppd|web|arc|ccd)\s+id:\s*\S+/gi, '')
+    .replace(/\s*transaction#:\s*\S+/gi, '')
+    .replace(/\s*-?\s*[\d,]+\.\d{2}\s*$/, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return text || String(description).slice(0, 60);
+}
+
 function guessCategory(description) {
   const text = description.toLowerCase();
+  if (isTransfer(text)) {
+    return 'Transfer';
+  }
+  if (/robinhood|fidelity|vanguard|schwab|etrade|e\*trade|coinbase|betterment|wealthfront|acorns|stash|brokerage|\binvest(ing|ment)?\b|\bira\b|401k/i.test(text)) {
+    return 'Investing';
+  }
   if (/groc|supermarket|whole foods|costco|walmart|aldi|trader joe|instacart|safeway|kroger|publix|sprouts/i.test(text)) {
     return 'Groceries';
   }
-  if (/uber|lyft|taxi|bus|train|divvy|transit|metro|tram/i.test(text)) {
+  // Word boundaries matter here: a bare "bus" matched "business" in statement
+  // boilerplate, and "uber" must not steal Uber Eats from Dining.
+  if (/\buber\b(?!\s*eats)|\blyft\b|\btaxis?\b|\bbus\b|\btrain\b|divvy|transit|\bmetra\b|\bmetro\b|\btram\b|parking|\btoll\b/i.test(text)) {
     return 'Transport';
   }
-  if (/rent|mortgage|landlord|apartment|utility|electric|water|gas|internet|comcast|verizon|xfinity/i.test(text)) {
+  if (/rent|mortgage|landlord|apartment|utility|utilities|electric|water|gas|internet|comcast|verizon|xfinity|comed|peoples gas|ameren|duke energy|con ?edison|national grid/i.test(text)) {
     return 'Rent & Utilities';
   }
   if (/netflix|spotify|hulu|prime|amazon|subscription|subscription/i.test(text)) {
@@ -117,7 +150,16 @@ function guessCategory(description) {
   if (/gym|fitness|health|doctor|hospital|medical|urgent care|rx|pharmacy/i.test(text)) {
     return 'Health & Fitness';
   }
-  if (/restaurant|dining|takeout|grubhub|doordash|ubereats|pizza|cafe|bar|starbucks|chipotle/i.test(text)) {
+  // Restaurants and bars mostly arrive as venue names, not the word "restaurant", so
+  // match the payment-processor prefixes (Toast bills as "Tst*", Square as "Sq *") and
+  // the words that actually show up in bar and restaurant names.
+  if (
+    /tst\*|\bsq \*/i.test(text)
+    || /restaur|dining|takeout|grubhub|doordash|ubereats|seamless|postmates/i.test(text)
+    || /\bbars?\b|barra\b|tavern|public hous|saloon|brewing|brewery|\bpub\b|liquors?|spirits|snacks|lounge|cantina/i.test(text)
+    || /pizza|cafe|coffee|espresso|taqueria|\btacos?\b|burger|sandwich|deli\b|bakery|bagel|sushi|ramen|noodle|\bbbq\b|wings|grill|kitchen|bistro|eatery|diner\b|creamery|ice cream|gelato/i.test(text)
+    || /starbucks|chipotle|levy@|emporium/i.test(text)
+  ) {
     return 'Dining Takeout';
   }
   if (/mall|shop|target|amazon|walmart|best buy|apple|nordstrom|store|shopping/i.test(text)) {
@@ -174,12 +216,21 @@ function parsePdfTransactions(pdfText) {
   const debugLines = [];
   const fallbackYear = extractFallbackYear(pdfText);
   const dateRegex = /(\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?|[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})/;
-  const amountRegex = /-?\(?\$?[\d,]+\.\d{2}\)?/g;
+  // Statements often render debits as "- 10.86" (space after the sign). Without the
+  // optional whitespace the sign is dropped and the debit is stored as income.
+  const amountRegex = /-?\s*\(?\$?[\d,]+\.\d{2}\)?/g;
   let lastTransaction = null;
 
   for (const line of rawLines) {
     const lowerLine = line.toLowerCase();
     if (/^(date|transaction date|description|amount|balance|type|memo|posting date)\b/.test(lowerLine)) {
+      continue;
+    }
+
+    // Statement footers and legal boilerplate can contain both a date and a dollar
+    // figure, which otherwise parse into a bogus transaction. Real ledger lines are short.
+    if (line.length > 200) {
+      debugLines.push({ line: line.slice(0, 120), reason: 'line too long to be a transaction' });
       continue;
     }
 
@@ -328,7 +379,7 @@ app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, 
           date: rawDate,
           description,
           amount,
-          category: rawCategory || 'Other',
+          category: isTransfer(description) ? 'Transfer' : rawCategory || 'Other',
         });
       }
     }
@@ -406,7 +457,7 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
 
     const trendRows = await query(
       `SELECT date_trunc('month', transaction_date) AS month_start,
-              SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend
+              SUM(amount) FILTER (WHERE amount < 0 AND category <> 'Transfer') * -1 AS spend
          FROM transactions
         WHERE user_id = $1
           AND transaction_date >= $2::date - INTERVAL '5 months'
@@ -425,8 +476,8 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
     const totalsParams = showAll ? [userId] : [userId, anchorMonthStart];
 
     const totalsRow = await query(
-      `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-              SUM(amount) FILTER (WHERE amount > 0) AS income
+      `SELECT SUM(amount) FILTER (WHERE amount < 0 AND category <> 'Transfer') * -1 AS spend,
+              SUM(amount) FILTER (WHERE amount > 0 AND category <> 'Transfer') AS income
        FROM transactions ${totalsWhere}`,
       totalsParams
     );
@@ -436,8 +487,8 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
     let prevTotals = { spend: 0, income: 0 };
     if (!showAll) {
       const prevRow = await query(
-        `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend,
-                SUM(amount) FILTER (WHERE amount > 0) AS income
+        `SELECT SUM(amount) FILTER (WHERE amount < 0 AND category <> 'Transfer') * -1 AS spend,
+                SUM(amount) FILTER (WHERE amount > 0 AND category <> 'Transfer') AS income
          FROM transactions
         WHERE user_id = $1
           AND date_trunc('month', transaction_date) = $2::date - INTERVAL '1 month'`,
@@ -481,8 +532,28 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
 
     const requestedCategories = [
       'Dining Takeout', 'Shopping', 'Other', 'Groceries',
-      'Transport', 'Subscriptions', 'Rent & Utilities', 'Health & Fitness',
+      'Transport', 'Subscriptions', 'Rent & Utilities', 'Health & Fitness', 'Investing',
     ];
+    // Individual charges behind each category, for the expandable drill-down.
+    const itemsRows = await query(
+      `SELECT category, transaction_date, description, amount
+       FROM transactions ${categoriesWhere}
+       ORDER BY transaction_date DESC, id DESC`,
+      totalsParams
+    );
+    const itemsByCategory = new Map();
+    for (const row of itemsRows.rows) {
+      const list = itemsByCategory.get(row.category) || [];
+      if (list.length < 200) {
+        list.push({
+          date: row.transaction_date.toISOString().slice(0, 10),
+          description: prettyDescription(row.description),
+          amount: Math.abs(Number(row.amount || 0)),
+        });
+      }
+      itemsByCategory.set(row.category, list);
+    }
+
     const categories = requestedCategories.map((name) => {
       const amount = categoryMap.get(name) || 0;
       const prevAmount = prevCategoryMap.get(name) || 0;
@@ -490,6 +561,7 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
         name,
         amount,
         change: showAll ? 0 : calcChange(amount, prevAmount),
+        items: itemsByCategory.get(name) || [],
       };
     });
 
@@ -544,7 +616,7 @@ app.get('/api/overview/debug', async (req, res) => {
 
     const trendRows = await query(
       `SELECT date_trunc('month', transaction_date) AS month_start,
-              SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend
+              SUM(amount) FILTER (WHERE amount < 0 AND category <> 'Transfer') * -1 AS spend
          FROM transactions
         WHERE user_id = $1
           AND transaction_date >= date_trunc('month', $2::date) - INTERVAL '5 months'
@@ -559,20 +631,20 @@ app.get('/api/overview/debug', async (req, res) => {
     let totals;
     if (all === 'true') {
       const totalsRow = await query(
-        `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0) AS income FROM transactions WHERE user_id = $1`,
+        `SELECT SUM(amount) FILTER (WHERE amount < 0 AND category <> 'Transfer') * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0 AND category <> 'Transfer') AS income FROM transactions WHERE user_id = $1`,
         [userId]
       );
       totals = totalsRow.rows[0] || { spend: 0, income: 0 };
     } else {
       const totalsRow = await query(
-        `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0) AS income FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date)`,
+        `SELECT SUM(amount) FILTER (WHERE amount < 0 AND category <> 'Transfer') * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0 AND category <> 'Transfer') AS income FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date)`,
         [userId, anchorDateStr]
       );
       totals = totalsRow.rows[0] || { spend: 0, income: 0 };
     }
 
     const prevTotals = all === 'true' ? { spend: 0, income: 0 } : (await query(
-      `SELECT SUM(amount) FILTER (WHERE amount < 0) * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0) AS income FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = (date_trunc('month', $2::date) - INTERVAL '1 month')`,
+      `SELECT SUM(amount) FILTER (WHERE amount < 0 AND category <> 'Transfer') * -1 AS spend, SUM(amount) FILTER (WHERE amount > 0 AND category <> 'Transfer') AS income FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = (date_trunc('month', $2::date) - INTERVAL '1 month')`,
       [userId, anchorDateStr]
     )).rows[0] || { spend: 0, income: 0 };
 
@@ -580,9 +652,31 @@ app.get('/api/overview/debug', async (req, res) => {
       ? await query(`SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND amount < 0 GROUP BY category ORDER BY spend DESC`, [userId])
       : await query(`SELECT category, SUM(amount) * -1 AS spend FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date) AND amount < 0 GROUP BY category ORDER BY spend DESC`, [userId, anchorDateStr]);
 
-    const requestedCategories = ['Dining Takeout','Shopping','Other','Groceries','Transport','Subscriptions','Rent & Utilities','Health & Fitness'];
+    const requestedCategories = ['Dining Takeout','Shopping','Other','Groceries','Transport','Subscriptions','Rent & Utilities','Health & Fitness','Investing'];
     const categoryMap = new Map(categoriesRows.rows.map((row) => [row.category, Number(row.spend || 0)]));
-    const categories = requestedCategories.map((name) => ({ name, amount: categoryMap.get(name) || 0, change: 0 }));
+
+    const itemsRows = all === 'true'
+      ? await query(`SELECT category, transaction_date, description, amount FROM transactions WHERE user_id = $1 AND amount < 0 ORDER BY transaction_date DESC, id DESC`, [userId])
+      : await query(`SELECT category, transaction_date, description, amount FROM transactions WHERE user_id = $1 AND date_trunc('month', transaction_date) = date_trunc('month', $2::date) AND amount < 0 ORDER BY transaction_date DESC, id DESC`, [userId, anchorDateStr]);
+    const itemsByCategory = new Map();
+    for (const row of itemsRows.rows) {
+      const list = itemsByCategory.get(row.category) || [];
+      if (list.length < 200) {
+        list.push({
+          date: row.transaction_date.toISOString().slice(0, 10),
+          description: prettyDescription(row.description),
+          amount: Math.abs(Number(row.amount || 0)),
+        });
+      }
+      itemsByCategory.set(row.category, list);
+    }
+
+    const categories = requestedCategories.map((name) => ({
+      name,
+      amount: categoryMap.get(name) || 0,
+      change: 0,
+      items: itemsByCategory.get(name) || [],
+    }));
 
     return res.json({ totalSpend: Number(totals.spend || 0), totalIncome: Number(totals.income || 0), spendChange: 0, incomeChange: 0, trendData, categories, monthOptions: months, anchorMonth: anchorDateStr });
   } catch (error) {

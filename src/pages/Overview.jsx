@@ -9,6 +9,7 @@ const defaultCategories = [
   { name: 'Subscriptions', amount: 0, change: 0 },
   { name: 'Rent & Utilities', amount: 0, change: 0 },
   { name: 'Health & Fitness', amount: 0, change: 0 },
+  { name: 'Investing', amount: 0, change: 0 },
 ];
 
 const defaultTrendData = [
@@ -30,12 +31,14 @@ export default function Overview({ token }) {
   const [trendData, setTrendData] = useState(defaultTrendData);
   const [monthOptions, setMonthOptions] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState('');
-  const [showAll, setShowAll] = useState(true);
+  // Default to the latest month so the summary cards show month-over-month, not all-time.
+  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [error, setError] = useState('');
   const [uploadDebug, setUploadDebug] = useState(null);
+  const [expandedCategory, setExpandedCategory] = useState(null);
   const fileInputRef = useRef(null);
 
   const fetchOverview = async () => {
@@ -59,6 +62,7 @@ export default function Overview({ token }) {
           ...category,
           amount: found?.amount ?? 0,
           change: found?.change ?? 0,
+          items: Array.isArray(found?.items) ? found.items : [],
         };
       });
 
@@ -287,25 +291,61 @@ export default function Overview({ token }) {
                 ? `${category.change}% more than last month`
                 : `${Math.abs(category.change)}% less than last month`;
 
+            const items = category.items || [];
+            const isOpen = expandedCategory === category.name;
+
             return (
-              <div key={category.name} className="category-item">
-                <div className="category-name">{category.name}</div>
-
-                <div className="category-progress">
-                  <div className={`progress-track ${isMore ? 'progress-more' : category.change < 0 ? 'progress-less' : 'progress-neutral'}`}>
-                    <div className="progress-fill" style={{ width: `${progressValue}%` }} />
+              <div key={category.name} className="category-block">
+                <button
+                  type="button"
+                  className="category-item"
+                  aria-expanded={isOpen}
+                  onClick={() => setExpandedCategory(isOpen ? null : category.name)}
+                >
+                  <div className="category-name">
+                    <span className={`category-caret ${isOpen ? 'open' : ''}`} aria-hidden="true">▸</span>
+                    {category.name}
+                    {items.length > 0 && <span className="category-count">{items.length}</span>}
                   </div>
-                  <div className="progress-text">{progressLabel}</div>
-                </div>
 
-                <div className="category-amount-cell">
-                  <div className="category-amount-row">
-                    <span className="category-amount">${category.amount.toFixed(2)}</span>
-                    <span className={`category-change category-change-right ${isMore ? 'more' : category.change < 0 ? 'less' : ''}`}>
-                      {category.change > 0 ? `+${category.change}%` : `${category.change}%`}
-                    </span>
+                  <div className="category-progress">
+                    <div className={`progress-track ${isMore ? 'progress-more' : category.change < 0 ? 'progress-less' : 'progress-neutral'}`}>
+                      <div className="progress-fill" style={{ width: `${progressValue}%` }} />
+                    </div>
+                    <div className="progress-text">{progressLabel}</div>
                   </div>
-                </div>
+
+                  <div className="category-amount-cell">
+                    <div className="category-amount-row">
+                      <span className="category-amount">${category.amount.toFixed(2)}</span>
+                      <span className={`category-change category-change-right ${isMore ? 'more' : category.change < 0 ? 'less' : ''}`}>
+                        {category.change > 0 ? `+${category.change}%` : `${category.change}%`}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+
+                {isOpen && (
+                  <div className="category-details">
+                    {items.length === 0 ? (
+                      <p className="category-details-empty">No charges in this category for {monthLabel}.</p>
+                    ) : (
+                      <table className="category-details-table">
+                        <tbody>
+                          {items.map((item, index) => (
+                            <tr key={`${item.date}-${item.description}-${index}`}>
+                              <td className="detail-date">
+                                {new Date(`${item.date}T00:00:00`).toLocaleDateString('default', { month: 'short', day: 'numeric' })}
+                              </td>
+                              <td className="detail-description">{item.description}</td>
+                              <td className="detail-amount">${item.amount.toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
