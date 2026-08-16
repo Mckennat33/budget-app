@@ -971,3 +971,248 @@ header p {
 .goals-steps b {
   color: #111827;
 }
+
+/* ---------------- Reports ---------------- */
+
+.reports-page {
+  display: grid;
+  gap: 18px;
+}
+
+.reports-subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+}
+
+.report-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.report-option {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.report-option:hover:not(:disabled) {
+  border-color: #93c5fd;
+  background: #f8fafc;
+}
+
+.report-option.selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb inset;
+}
+
+.report-option:disabled,
+.report-option.unavailable {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.report-option:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.report-option-name {
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.report-soon {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.report-option-desc {
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+.report-run {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.report-month {
+  display: grid;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.report-month select {
+  font: inherit;
+  padding: 9px 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111827;
+  min-width: 170px;
+}
+
+.report-headline {
+  display: grid;
+  grid-template-columns: minmax(200px, auto) 1fr;
+  gap: 20px;
+  align-items: center;
+  background: #111827;
+  border-radius: 18px;
+  padding: 24px 26px;
+  color: #ffffff;
+}
+
+.report-headline-figure {
+  display: grid;
+  gap: 2px;
+}
+
+.report-headline-figure .k {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.report-headline-figure .v {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-headline-figure .sub {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.report-headline-note p {
+  margin: 0;
+  color: #d1d5db;
+  font-size: 0.94rem;
+}
+
+.report-headline-note .report-annual {
+  margin-top: 8px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.opportunity-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.opportunity {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.opportunity-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.opportunity-kind {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.opportunity-kind.kind-fees { background: #fee2e2; color: #991b1b; }
+.opportunity-kind.kind-frequency { background: #dbeafe; color: #1e40af; }
+.opportunity-kind.kind-increase { background: #ffedd5; color: #9a3412; }
+.opportunity-kind.kind-recurring { background: #ede9fe; color: #5b21b6; }
+
+.opportunity-title {
+  font-weight: 700;
+  color: #111827;
+}
+
+.opportunity-saving {
+  font-weight: 800;
+  color: #15803d;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.opportunity-detail {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.92rem;
+  max-width: 70ch;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-table th {
+  text-align: left;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #6b7280;
+  font-weight: 700;
+  padding: 0 12px 8px 0;
+  border-bottom: 1px solid #d1d5db;
+  white-space: nowrap;
+}
+
+.report-table th.num,
+.report-table td.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.report-table td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.report-table td.muted { color: #6b7280; }
+.report-table td.strong { font-weight: 700; color: #111827; }
+.report-table tr:last-child td { border-bottom: none; }
+
+@media (max-width: 640px) {
+  .report-headline { grid-template-columns: 1fr; }
+}

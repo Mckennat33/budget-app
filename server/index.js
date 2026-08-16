@@ -736,6 +736,62 @@ function detectRentRow(rows) {
   return best;
 }
 
+// Splits one month's transactions into what is committed and what is chosen. Shared by
+// the goals budget and the reports, so both always agree on what counts as spending
+// you control. Classifying in JS keeps the rent check from being counted twice.
+function summariseMonth(rows) {
+  const spend = rows.filter((row) => Number(row.amount) < 0);
+  const income = rows
+    .filter((row) => Number(row.amount) > 0)
+    .reduce((sum, row) => sum + Number(row.amount), 0);
+  const rentRow = detectRentRow(spend);
+  const fixedByLabel = new Map();
+  const flexibleByCategory = new Map();
+  let fixed = 0;
+  let discretionary = 0;
+  let flexible = 0;
+  const discretionaryRows = [];
+  const reviewable = [];
+
+  for (const row of spend) {
+    const amount = Math.abs(Number(row.amount));
+    const isRent = rentRow !== null && row.id === rentRow.id;
+    const isLoan = LOAN_PATTERN.test(row.description || '');
+    if (isRent || isLoan || FIXED_CATEGORIES.has(row.category)) {
+      const label = isRent ? 'Rent' : isLoan ? 'Loans' : row.category;
+      fixedByLabel.set(label, (fixedByLabel.get(label) || 0) + amount);
+      fixed += amount;
+      // Subscriptions are committed but still worth auditing; rent, loans and
+      // investing are not waste and stay out of the reports entirely.
+      if (row.category === 'Subscriptions') {
+        reviewable.push({ description: row.description, amount, category: row.category, date: row.transaction_date });
+      }
+    } else {
+      discretionary += amount;
+      discretionaryRows.push({ date: row.transaction_date, amount });
+      reviewable.push({ description: row.description, amount, category: row.category, date: row.transaction_date });
+      if (FLEXIBLE_CATEGORIES.has(row.category)) {
+        flexible += amount;
+        flexibleByCategory.set(row.category, (flexibleByCategory.get(row.category) || 0) + amount);
+      }
+    }
+  }
+
+  return {
+    income,
+    rent: rentRow,
+    fixedTotal: fixed,
+    discretionaryTotal: discretionary,
+    flexibleTotal: flexible,
+    flexibleByCategory,
+    discretionaryRows,
+    reviewable,
+    fixedBreakdown: [...fixedByLabel.entries()]
+      .map(([label, amount]) => ({ label, amount: Number(amount.toFixed(2)) }))
+      .sort((a, b) => b.amount - a.amount),
+  };
+}
+
 function monthsUntil(anchorMonthStart, targetDate) {
   if (!targetDate) return null;
   const anchor = parseLocalDate(anchorMonthStart);
@@ -809,50 +865,6 @@ async function buildGoalsPayload(userId) {
     rowsByMonth.get(key).push(row);
   }
 
-  function summariseMonth(rows) {
-    const spend = rows.filter((row) => Number(row.amount) < 0);
-    const income = rows
-      .filter((row) => Number(row.amount) > 0)
-      .reduce((sum, row) => sum + Number(row.amount), 0);
-    const rentRow = detectRentRow(spend);
-    const fixedByLabel = new Map();
-    const flexibleByCategory = new Map();
-    let fixed = 0;
-    let discretionary = 0;
-    let flexible = 0;
-    const discretionaryRows = [];
-
-    for (const row of spend) {
-      const amount = Math.abs(Number(row.amount));
-      const isRent = rentRow !== null && row.id === rentRow.id;
-      const isLoan = LOAN_PATTERN.test(row.description || '');
-      if (isRent || isLoan || FIXED_CATEGORIES.has(row.category)) {
-        const label = isRent ? 'Rent' : isLoan ? 'Loans' : row.category;
-        fixedByLabel.set(label, (fixedByLabel.get(label) || 0) + amount);
-        fixed += amount;
-      } else {
-        discretionary += amount;
-        discretionaryRows.push({ date: row.transaction_date, amount });
-        if (FLEXIBLE_CATEGORIES.has(row.category)) {
-          flexible += amount;
-          flexibleByCategory.set(row.category, (flexibleByCategory.get(row.category) || 0) + amount);
-        }
-      }
-    }
-
-    return {
-      income,
-      rent: rentRow,
-      fixedTotal: fixed,
-      discretionaryTotal: discretionary,
-      flexibleTotal: flexible,
-      flexibleByCategory,
-      discretionaryRows,
-      fixedBreakdown: [...fixedByLabel.entries()]
-        .map(([label, amount]) => ({ label, amount: Number(amount.toFixed(2)) }))
-        .sort((a, b) => b.amount - a.amount),
-    };
-  }
 
   const monthKeys = [...rowsByMonth.keys()].sort();
   const summaries = new Map(monthKeys.map((key) => [key, summariseMonth(rowsByMonth.get(key))]));
@@ -1096,6 +1108,232 @@ app.delete('/api/goals/savings/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Savings goal delete failed:', error);
     return res.status(500).json({ error: 'Unable to remove the goal.' });
+  }
+});
+
+/* ---------------------------------------------------------------------------
+ * Reports
+ * ------------------------------------------------------------------------- */
+
+// Bank charges are the only truly free saving: nothing was bought.
+const FEE_PATTERN = /\b(fee|fees|overdraft|nsf|late charge|service charge|interest charge|surcharge)\b/i;
+
+const REPORTS = [
+  { id: 'waste', name: 'Where am I wasting money', description: 'Finds the spending most worth cutting and estimates what each change is worth.', available: true },
+  { id: 'trends', name: 'Spending trends', description: 'How each category has moved over time.', available: false },
+  { id: 'merchants', name: 'Merchant deep dive', description: 'Every merchant ranked, with visit history.', available: false },
+];
+
+// Collapses one raw statement line to a stable merchant identity: strips the processor
+// noise, then the per-transaction reference numbers that would otherwise make every
+// Venmo payment look like a different merchant.
+function merchantLabel(description) {
+  return prettyDescription(description)
+    .replace(/\b\d{3}-\d{3}-\d{4}\b/g, '')
+    .replace(/\s*\d{5,}\s*/g, ' ')
+    .replace(/\s*#\s*\d+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function merchantKey(description) {
+  return merchantLabel(description).toLowerCase();
+}
+
+async function buildWasteReport(userId, requestedMonth) {
+  const allRows = await query(
+    `SELECT id, transaction_date, description, amount, category
+       FROM transactions
+      WHERE user_id = $1 AND category <> 'Transfer'
+      ORDER BY transaction_date ASC, id ASC`,
+    [userId]
+  );
+
+  if (allRows.rows.length === 0) return { hasData: false };
+
+  const rowsByMonth = new Map();
+  for (const row of allRows.rows) {
+    const key = row.transaction_date.toISOString().slice(0, 7);
+    if (!rowsByMonth.has(key)) rowsByMonth.set(key, []);
+    rowsByMonth.get(key).push(row);
+  }
+
+  const monthKeys = [...rowsByMonth.keys()].sort();
+  const anchorKey = requestedMonth && rowsByMonth.has(requestedMonth)
+    ? requestedMonth
+    : monthKeys[monthKeys.length - 1];
+  const previousKey = monthKeys[monthKeys.indexOf(anchorKey) - 1] || null;
+
+  const summary = summariseMonth(rowsByMonth.get(anchorKey));
+  const previousSummary = previousKey ? summariseMonth(rowsByMonth.get(previousKey)) : null;
+
+  // Roll this month's reviewable spending up by merchant.
+  const merchants = new Map();
+  for (const item of summary.reviewable) {
+    const key = merchantKey(item.description);
+    if (!key) continue;
+    const entry = merchants.get(key) || {
+      key, name: merchantLabel(item.description), category: item.category, total: 0, visits: 0,
+    };
+    entry.total += item.amount;
+    entry.visits += 1;
+    merchants.set(key, entry);
+  }
+
+  const previousMerchants = new Map();
+  if (previousSummary) {
+    for (const item of previousSummary.reviewable) {
+      const key = merchantKey(item.description);
+      if (!key) continue;
+      previousMerchants.set(key, (previousMerchants.get(key) || 0) + item.amount);
+    }
+  }
+
+  // A charge is treated as recurring when it lands in three or more months at a
+  // consistent amount and no more than twice in any one of them.
+  const monthsSeen = new Map();
+  for (const key of monthKeys) {
+    const seen = new Map();
+    for (const item of summariseMonth(rowsByMonth.get(key)).reviewable) {
+      const merchant = merchantKey(item.description);
+      if (!merchant) continue;
+      const bucket = seen.get(merchant) || { total: 0, count: 0 };
+      bucket.total += item.amount;
+      bucket.count += 1;
+      seen.set(merchant, bucket);
+    }
+    for (const [merchant, bucket] of seen) {
+      if (!monthsSeen.has(merchant)) monthsSeen.set(merchant, []);
+      monthsSeen.get(merchant).push(bucket);
+    }
+  }
+
+  const recurring = [];
+  for (const [merchant, buckets] of monthsSeen) {
+    if (buckets.length < 3) continue;
+    if (buckets.some((bucket) => bucket.count > 2)) continue;
+    const amounts = buckets.map((bucket) => bucket.total);
+    const average = amounts.reduce((sum, value) => sum + value, 0) / amounts.length;
+    const steady = amounts.every((value) => Math.abs(value - average) <= Math.max(1, average * 0.2));
+    if (!steady) continue;
+    const entry = merchants.get(merchant);
+    recurring.push({
+      name: entry ? entry.name : merchant,
+      monthly: Number(average.toFixed(2)),
+      months: buckets.length,
+      annual: Number((average * 12).toFixed(2)),
+    });
+  }
+  recurring.sort((a, b) => b.monthly - a.monthly);
+
+  const fees = summary.reviewable
+    .filter((item) => FEE_PATTERN.test(item.description || ''))
+    .map((item) => ({
+      name: merchantLabel(item.description),
+      amount: Number(item.amount.toFixed(2)),
+      date: item.date.toISOString().slice(0, 10),
+    }));
+  const feeTotal = fees.reduce((sum, fee) => sum + fee.amount, 0);
+
+  // One opportunity per merchant, keeping whichever framing is worth the most, so the
+  // headline total never counts the same dollar twice.
+  const opportunities = new Map();
+  const consider = (key, opportunity) => {
+    const existing = opportunities.get(key);
+    if (!existing || opportunity.saving > existing.saving) opportunities.set(key, opportunity);
+  };
+
+  if (feeTotal > 0) {
+    consider('__fees', {
+      kind: 'Fees',
+      title: 'Bank charges you can avoid entirely',
+      detail: `${fees.length} charge${fees.length === 1 ? '' : 's'} this month: ${fees.map((f) => f.name).join(', ')}. Nothing was bought for this money.`,
+      saving: Number(feeTotal.toFixed(2)),
+    });
+  }
+
+  for (const entry of merchants.values()) {
+    const average = entry.total / entry.visits;
+
+    if (entry.visits >= 4) {
+      const trimmed = Math.round(entry.visits / 3);
+      consider(entry.key, {
+        kind: 'Frequency',
+        title: `${entry.name}`,
+        detail: `${entry.visits} visits this month at about ${formatMoney(average)} each. Going ${trimmed} time${trimmed === 1 ? '' : 's'} less a month is worth ${formatMoney(average * trimmed)}.`,
+        saving: Number((average * trimmed).toFixed(2)),
+      });
+    }
+
+    const previousTotal = previousMerchants.get(entry.key) || 0;
+    const delta = entry.total - previousTotal;
+    if (previousTotal > 0 && delta >= 40 && delta / previousTotal >= 0.25) {
+      consider(entry.key, {
+        kind: 'Increase',
+        title: `${entry.name} is climbing`,
+        detail: `${formatMoney(entry.total)} this month against ${formatMoney(previousTotal)} last month. Returning to last month's level saves ${formatMoney(delta)}.`,
+        saving: Number(delta.toFixed(2)),
+      });
+    }
+  }
+
+  for (const item of recurring) {
+    const key = merchantKey(item.name);
+    consider(key, {
+      kind: 'Recurring',
+      title: `${item.name} renews every month`,
+      detail: `${formatMoney(item.monthly)} a month for ${item.months} months running — ${formatMoney(item.annual)} a year. Worth checking you still use it.`,
+      saving: Number(item.monthly.toFixed(2)),
+    });
+  }
+
+  const ranked = [...opportunities.values()].sort((a, b) => b.saving - a.saving).slice(0, 8);
+  const topMerchants = [...merchants.values()]
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 10)
+    .map((entry) => ({
+      name: entry.name,
+      category: entry.category,
+      total: Number(entry.total.toFixed(2)),
+      visits: entry.visits,
+      average: Number((entry.total / entry.visits).toFixed(2)),
+    }));
+
+  return {
+    hasData: true,
+    month: anchorKey,
+    monthLabel: parseLocalDate(`${anchorKey}-01`).toLocaleString('default', { month: 'long', year: 'numeric' }),
+    previousMonthLabel: previousKey
+      ? parseLocalDate(`${previousKey}-01`).toLocaleString('default', { month: 'long', year: 'numeric' })
+      : null,
+    reviewedTotal: Number(summary.reviewable.reduce((sum, item) => sum + item.amount, 0).toFixed(2)),
+    potentialSaving: Number(ranked.reduce((sum, item) => sum + item.saving, 0).toFixed(2)),
+    opportunities: ranked,
+    topMerchants,
+    recurring: recurring.slice(0, 8),
+    fees,
+    availableMonths: monthKeys.map((key) => ({
+      key,
+      label: parseLocalDate(`${key}-01`).toLocaleString('default', { month: 'long', year: 'numeric' }),
+    })).reverse(),
+  };
+}
+
+function formatMoney(value) {
+  return `$${Number(value || 0).toFixed(2)}`;
+}
+
+app.get('/api/reports', authMiddleware, (req, res) => {
+  res.json({ reports: REPORTS });
+});
+
+app.get('/api/reports/waste', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  try {
+    return res.json(await buildWasteReport(req.user.sub, req.query.month));
+  } catch (error) {
+    console.error('Waste report failed:', error);
+    return res.status(500).json({ error: 'Unable to run this report.' });
   }
 });
 

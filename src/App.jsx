@@ -42,7 +42,7 @@ function App() {
     { key: 'transactions', label: 'Transactions', component: <Transactions /> },
     { key: 'categories', label: 'Categories', component: <Categories /> },
     { key: 'goals', label: 'Goals', component: <Goals token={token} /> },
-    { key: 'reports', label: 'Reports', component: <Reports /> },
+    { key: 'reports', label: 'Reports', component: <Reports token={token} /> },
     { key: 'settings', label: 'Account', component: <Account token={token} /> },
   ];
 
