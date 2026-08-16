@@ -191,8 +191,8 @@ export default function Goals({ token }) {
         <section className="goals-card">
           <div className="section-title">Where {data.anchorLabel} landed</div>
           <p className="goals-help">
-            Money left over is not counted as saved — it only becomes savings when you
-            move it. A cheaper month shows up here as a wider gap.
+            What the month did with the money. This is separate from goal progress —
+            a cheaper month shows up here as a wider gap.
           </p>
           <table className="goals-ledger">
             <tbody>
@@ -218,8 +218,7 @@ export default function Goals({ token }) {
           </table>
           {data.unallocated > 0 && (
             <p className="goals-note">
-              {currency(data.unallocated)} sat unspent and unmoved. Transferring it to
-              savings is what turns it into progress on a goal.
+              {currency(data.unallocated)} stayed in checking.
             </p>
           )}
         </section>
@@ -228,9 +227,21 @@ export default function Goals({ token }) {
       <section className="goals-card">
         <div className="section-title">Savings goals</div>
         <p className="goals-help">
-          Progress comes from transfers to savings found in your statements.
-          {goals.length > 1 && ' With two goals, savings are split in proportion to their targets.'}
+          Progress is money you didn&rsquo;t spend: come in under the previous month&rsquo;s
+          discretionary spending and the difference goes to your goals. Nothing needs to
+          leave your checking account.
+          {goals.length > 1 && ' With two goals, it is split in proportion to their targets.'}
         </p>
+
+        {data?.hasData && goals.length > 0 && (
+          <p className="goals-note">
+            {data.previousDiscretionary === null
+              ? `${data.anchorLabel} is your only month of data, so there is nothing to compare it against yet. Upload another statement to start earning progress.`
+              : data.freedThisMonth > 0
+                ? `${data.anchorLabel}: you spent ${currency(data.discretionary)} against ${currency(data.previousDiscretionary)} the month before — ${currency(data.freedThisMonth)} went to your goals.`
+                : `${data.anchorLabel}: you spent ${currency(data.discretionary)}, more than the ${currency(data.previousDiscretionary)} the month before, so nothing was added.`}
+          </p>
+        )}
 
         {goals.length === 0 && <p className="goals-note">No goals yet. Add one below.</p>}
 

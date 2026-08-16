@@ -779,49 +779,70 @@ async function buildGoalsPayload(userId) {
   const anchorDate = parseLocalDate(anchorMonthStart);
   const daysInMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0).getDate();
 
-  // Every non-transfer movement in the anchor month, classified in JS so the rent
-  // check cannot be counted as both a category total and a fixed cost.
-  const monthRows = await query(
+  // Every month gets classified, not just the anchor one: goal progress is measured
+  // by comparing a month against the one before it, so each needs its own split.
+  // Classifying in JS keeps the rent check from counting as both a category total
+  // and a fixed cost.
+  const allRows = await query(
     `SELECT id, transaction_date, description, amount, category
        FROM transactions
-      WHERE user_id = $1
-        AND date_trunc('month', transaction_date) = $2::date
-        AND category <> 'Transfer'
+      WHERE user_id = $1 AND category <> 'Transfer'
       ORDER BY transaction_date ASC, id ASC`,
-    [userId, anchorMonthStart]
+    [userId]
   );
 
-  const spendRows = monthRows.rows.filter((row) => Number(row.amount) < 0);
-  const monthIncome = monthRows.rows
-    .filter((row) => Number(row.amount) > 0)
-    .reduce((sum, row) => sum + Number(row.amount), 0);
-  const rent = detectRentRow(spendRows);
+  const rowsByMonth = new Map();
+  for (const row of allRows.rows) {
+    const key = row.transaction_date.toISOString().slice(0, 7);
+    if (!rowsByMonth.has(key)) rowsByMonth.set(key, []);
+    rowsByMonth.get(key).push(row);
+  }
 
-  const fixedBreakdown = [];
-  const fixedByLabel = new Map();
-  let fixedTotal = 0;
-  let discretionaryTotal = 0;
-  const discretionaryRows = [];
+  function summariseMonth(rows) {
+    const spend = rows.filter((row) => Number(row.amount) < 0);
+    const income = rows
+      .filter((row) => Number(row.amount) > 0)
+      .reduce((sum, row) => sum + Number(row.amount), 0);
+    const rentRow = detectRentRow(spend);
+    const fixedByLabel = new Map();
+    let fixed = 0;
+    let discretionary = 0;
+    const discretionaryRows = [];
 
-  for (const row of spendRows) {
-    const amount = Math.abs(Number(row.amount));
-    const isRent = rent !== null && row.id === rent.id;
-    if (isRent || FIXED_CATEGORIES.has(row.category)) {
-      const label = isRent ? 'Rent' : row.category;
-      fixedByLabel.set(label, (fixedByLabel.get(label) || 0) + amount);
-      fixedTotal += amount;
-    } else {
-      discretionaryTotal += amount;
-      discretionaryRows.push({ date: row.transaction_date, amount });
+    for (const row of spend) {
+      const amount = Math.abs(Number(row.amount));
+      const isRent = rentRow !== null && row.id === rentRow.id;
+      if (isRent || FIXED_CATEGORIES.has(row.category)) {
+        const label = isRent ? 'Rent' : row.category;
+        fixedByLabel.set(label, (fixedByLabel.get(label) || 0) + amount);
+        fixed += amount;
+      } else {
+        discretionary += amount;
+        discretionaryRows.push({ date: row.transaction_date, amount });
+      }
     }
-  }
-  for (const [label, amount] of fixedByLabel) {
-    fixedBreakdown.push({ label, amount: Number(amount.toFixed(2)) });
-  }
-  fixedBreakdown.sort((a, b) => b.amount - a.amount);
 
-  // Savings actually set aside: explicit transfers out to savings beat any
-  // inference from surplus, and the statements already carry them.
+    return {
+      income,
+      rent: rentRow,
+      fixedTotal: fixed,
+      discretionaryTotal: discretionary,
+      discretionaryRows,
+      fixedBreakdown: [...fixedByLabel.entries()]
+        .map(([label, amount]) => ({ label, amount: Number(amount.toFixed(2)) }))
+        .sort((a, b) => b.amount - a.amount),
+    };
+  }
+
+  const monthKeys = [...rowsByMonth.keys()].sort();
+  const summaries = new Map(monthKeys.map((key) => [key, summariseMonth(rowsByMonth.get(key))]));
+
+  const anchorKey = anchorMonthStart.slice(0, 7);
+  const anchorSummary = summaries.get(anchorKey) || summariseMonth([]);
+  const { income: monthIncome, rent, fixedTotal, discretionaryTotal, discretionaryRows, fixedBreakdown } = anchorSummary;
+
+  // Transfers no longer drive goal progress, but they are still needed to reconcile
+  // income against spending in the month ledger.
   const transferRows = await query(
     `SELECT transaction_date, ABS(amount) AS amount
        FROM transactions
@@ -831,25 +852,35 @@ async function buildGoalsPayload(userId) {
   );
   const savedPool = transferRows.rows.reduce((sum, row) => sum + Number(row.amount), 0);
 
-  // Each transfer is credited only to the goals that already existed when it
-  // happened, split between them in proportion to their targets. Walking the
-  // transfers one at a time is what stops a new goal from inheriting savings that
-  // predate it, and stops adding a second goal from stripping progress off the first.
+  // Progress is money you did not spend. Each month is measured against the one
+  // before it: come in under last month's discretionary spending and the difference
+  // moves your goals. Hitting the weekly allowance exactly funds them at the planned
+  // rate, because the allowance is that baseline minus the savings commitment.
+  // Nothing has to leave your checking account for this to count.
   const goalStartMonth = new Map();
   for (const row of goalsRows.rows) {
-    const created = parseLocalDate(row.created_at.toISOString().slice(0, 10));
-    goalStartMonth.set(row.id, new Date(created.getFullYear(), created.getMonth(), 1));
+    goalStartMonth.set(row.id, row.created_at.toISOString().slice(0, 7));
   }
 
   const accrued = new Map(goalsRows.rows.map((row) => [row.id, 0]));
-  for (const transfer of transferRows.rows) {
-    const when = parseLocalDate(transfer.transaction_date);
-    const active = goalsRows.rows.filter((row) => when >= goalStartMonth.get(row.id));
+  let freedThisMonth = 0;
+
+  for (let index = 1; index < monthKeys.length; index += 1) {
+    const key = monthKeys[index];
+    const previousSpend = summaries.get(monthKeys[index - 1]).discretionaryTotal;
+    const currentSpend = summaries.get(key).discretionaryTotal;
+    const freed = Math.max(0, previousSpend - currentSpend);
+    if (key === anchorKey) freedThisMonth = freed;
+    if (freed <= 0) continue;
+
+    // Credited only to goals that already existed that month, so a new goal never
+    // inherits progress from before it, and adding a second never strips the first.
+    const active = goalsRows.rows.filter((row) => key >= goalStartMonth.get(row.id));
     if (active.length === 0) continue;
     const activeTargetSum = active.reduce((sum, row) => sum + Number(row.target_amount), 0);
     for (const row of active) {
       const share = activeTargetSum > 0 ? Number(row.target_amount) / activeTargetSum : 0;
-      accrued.set(row.id, accrued.get(row.id) + Number(transfer.amount) * share);
+      accrued.set(row.id, accrued.get(row.id) + freed * share);
     }
   }
 
@@ -922,6 +953,10 @@ async function buildGoalsPayload(userId) {
     monthIncome: Number(monthIncome.toFixed(2)),
     savedThisMonth: Number(savedThisMonth.toFixed(2)),
     unallocated: Number(unallocated.toFixed(2)),
+    freedThisMonth: Number(freedThisMonth.toFixed(2)),
+    previousDiscretionary: monthKeys.indexOf(anchorKey) > 0
+      ? Number(summaries.get(monthKeys[monthKeys.indexOf(anchorKey) - 1]).discretionaryTotal.toFixed(2))
+      : null,
     totalSpend: Number((fixedTotal + discretionaryTotal).toFixed(2)),
     fixedTotal: Number(fixedTotal.toFixed(2)),
     fixedBreakdown,
