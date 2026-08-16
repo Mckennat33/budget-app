@@ -448,7 +448,7 @@ app.get('/api/overview', authMiddleware, async (req, res) => {
 
     // 3. Trend: last 6 months ending at the anchor month (not necessarily "today")
     const months = [];
-    const anchorDate = new Date(anchorMonthStart);
+    const anchorDate = parseLocalDate(anchorMonthStart);
     for (let index = 5; index >= 0; index -= 1) {
       const date = new Date(anchorDate.getFullYear(), anchorDate.getMonth() - index, 1);
       const label = date.toLocaleString('default', { month: 'short' });
@@ -607,7 +607,7 @@ app.get('/api/overview/debug', async (req, res) => {
     }
 
     const months = [];
-    const anchor = new Date(anchorDateStr);
+    const anchor = parseLocalDate(anchorDateStr);
     for (let index = 5; index >= 0; index -= 1) {
       const date = new Date(anchor.getFullYear(), anchor.getMonth() - index, 1);
       const label = date.toLocaleString('default', { month: 'short' });
@@ -682,6 +682,342 @@ app.get('/api/overview/debug', async (req, res) => {
   } catch (error) {
     console.error('Debug overview fetch failed:', error);
     return res.status(500).json({ error: 'Unable to load debug overview data.' });
+  }
+});
+
+/* ---------------------------------------------------------------------------
+ * Goals
+ *
+ * Everything here derives from the newest month that has data, the same anchor
+ * the overview uses. Money you do not control week to week (rent, utilities,
+ * subscriptions, automatic investing) is taken off the top; savings goals take
+ * their cut next; whatever survives becomes the weekly allowance.
+ * ------------------------------------------------------------------------- */
+
+// Recurring commitments rather than day-to-day choices. Investing sits here
+// because the Robinhood/Acorns deposits are automatic - it still counts toward
+// total spend on the overview, it just is not part of the weekly allowance.
+const FIXED_CATEGORIES = new Set(['Rent & Utilities', 'Subscriptions', 'Investing']);
+const SAVINGS_TRANSFER_PATTERN = /transfer\s+to\s+sav/i;
+const MAX_SAVINGS_GOALS = 2;
+
+// '2026-07-01' through the Date constructor is parsed as UTC midnight, which is the
+// previous day - and so the previous month - anywhere west of Greenwich. Every
+// calendar calculation here has to go through this instead.
+function parseLocalDate(value) {
+  if (value instanceof Date) return value;
+  return new Date(`${String(value).slice(0, 10)}T00:00:00`);
+}
+
+// Rent is written by check and carries no label, so it is identified by shape rather
+// than by a declared amount: the largest check in the month. Reading the real cleared
+// amount means a discounted month lands at its true value on its own. Any smaller
+// checks stay in discretionary, where an ordinary one-off check belongs.
+function detectRentRow(rows) {
+  let best = null;
+  for (const row of rows) {
+    if (!/\bcheck\b/i.test(row.description || '')) continue;
+    const amount = Math.abs(Number(row.amount));
+    if (best === null || amount > best.amount) {
+      best = { id: row.id, amount };
+    }
+  }
+  return best;
+}
+
+function monthsUntil(anchorMonthStart, targetDate) {
+  if (!targetDate) return null;
+  const anchor = parseLocalDate(anchorMonthStart);
+  const target = parseLocalDate(targetDate);
+  const diff = (target.getFullYear() - anchor.getFullYear()) * 12
+    + (target.getMonth() - anchor.getMonth());
+  return Math.max(1, diff);
+}
+
+async function buildGoalsPayload(userId) {
+  const settingsRow = await query(
+    'SELECT declared_rent, reduction_percent FROM goal_settings WHERE user_id = $1',
+    [userId]
+  );
+  const settings = settingsRow.rows[0] || { declared_rent: 0, reduction_percent: 0 };
+  const declaredRent = Number(settings.declared_rent || 0);
+  const reductionPercent = Number(settings.reduction_percent || 0);
+
+  const monthsResult = await query(
+    `SELECT DISTINCT date_trunc('month', transaction_date) AS month_start
+       FROM transactions WHERE user_id = $1 ORDER BY month_start DESC`,
+    [userId]
+  );
+
+  const goalsRows = await query(
+    `SELECT id, name, target_amount, target_date, created_at
+       FROM savings_goals WHERE user_id = $1 ORDER BY id ASC`,
+    [userId]
+  );
+
+  if (monthsResult.rows.length === 0) {
+    return {
+      hasData: false,
+      declaredRent,
+      reductionPercent,
+      savingsGoals: goalsRows.rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        targetAmount: Number(row.target_amount),
+        targetDate: row.target_date ? row.target_date.toISOString().slice(0, 10) : null,
+        saved: 0,
+        remaining: Number(row.target_amount),
+        monthsRemaining: null,
+        perMonth: 0,
+        perWeek: 0,
+        percentComplete: 0,
+      })),
+    };
+  }
+
+  const anchorMonthStart = monthsResult.rows[0].month_start.toISOString().slice(0, 10);
+  const anchorDate = parseLocalDate(anchorMonthStart);
+  const daysInMonth = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0).getDate();
+
+  // Every non-transfer movement in the anchor month, classified in JS so the rent
+  // check cannot be counted as both a category total and a fixed cost.
+  const monthRows = await query(
+    `SELECT id, transaction_date, description, amount, category
+       FROM transactions
+      WHERE user_id = $1
+        AND date_trunc('month', transaction_date) = $2::date
+        AND category <> 'Transfer'
+      ORDER BY transaction_date ASC, id ASC`,
+    [userId, anchorMonthStart]
+  );
+
+  const spendRows = monthRows.rows.filter((row) => Number(row.amount) < 0);
+  const monthIncome = monthRows.rows
+    .filter((row) => Number(row.amount) > 0)
+    .reduce((sum, row) => sum + Number(row.amount), 0);
+  const rent = detectRentRow(spendRows);
+
+  const fixedBreakdown = [];
+  const fixedByLabel = new Map();
+  let fixedTotal = 0;
+  let discretionaryTotal = 0;
+  const discretionaryRows = [];
+
+  for (const row of spendRows) {
+    const amount = Math.abs(Number(row.amount));
+    const isRent = rent !== null && row.id === rent.id;
+    if (isRent || FIXED_CATEGORIES.has(row.category)) {
+      const label = isRent ? 'Rent' : row.category;
+      fixedByLabel.set(label, (fixedByLabel.get(label) || 0) + amount);
+      fixedTotal += amount;
+    } else {
+      discretionaryTotal += amount;
+      discretionaryRows.push({ date: row.transaction_date, amount });
+    }
+  }
+  for (const [label, amount] of fixedByLabel) {
+    fixedBreakdown.push({ label, amount: Number(amount.toFixed(2)) });
+  }
+  fixedBreakdown.sort((a, b) => b.amount - a.amount);
+
+  // Savings actually set aside: explicit transfers out to savings beat any
+  // inference from surplus, and the statements already carry them.
+  const transferRows = await query(
+    `SELECT transaction_date, ABS(amount) AS amount
+       FROM transactions
+      WHERE user_id = $1 AND amount < 0 AND description ~* $2
+      ORDER BY transaction_date ASC`,
+    [userId, SAVINGS_TRANSFER_PATTERN.source]
+  );
+  const savedPool = transferRows.rows.reduce((sum, row) => sum + Number(row.amount), 0);
+
+  // Each transfer is credited only to the goals that already existed when it
+  // happened, split between them in proportion to their targets. Walking the
+  // transfers one at a time is what stops a new goal from inheriting savings that
+  // predate it, and stops adding a second goal from stripping progress off the first.
+  const goalStartMonth = new Map();
+  for (const row of goalsRows.rows) {
+    const created = parseLocalDate(row.created_at.toISOString().slice(0, 10));
+    goalStartMonth.set(row.id, new Date(created.getFullYear(), created.getMonth(), 1));
+  }
+
+  const accrued = new Map(goalsRows.rows.map((row) => [row.id, 0]));
+  for (const transfer of transferRows.rows) {
+    const when = parseLocalDate(transfer.transaction_date);
+    const active = goalsRows.rows.filter((row) => when >= goalStartMonth.get(row.id));
+    if (active.length === 0) continue;
+    const activeTargetSum = active.reduce((sum, row) => sum + Number(row.target_amount), 0);
+    for (const row of active) {
+      const share = activeTargetSum > 0 ? Number(row.target_amount) / activeTargetSum : 0;
+      accrued.set(row.id, accrued.get(row.id) + Number(transfer.amount) * share);
+    }
+  }
+
+  const savingsGoals = goalsRows.rows.map((row) => {
+    const targetAmount = Number(row.target_amount);
+    const saved = Math.min(targetAmount, Number(accrued.get(row.id).toFixed(2)));
+    const remaining = Math.max(0, Number((targetAmount - saved).toFixed(2)));
+    const targetDate = row.target_date ? row.target_date.toISOString().slice(0, 10) : null;
+    const monthsRemaining = monthsUntil(anchorMonthStart, row.target_date);
+    // Dividing what is left by the months that are left is the rollover: a missed
+    // month raises the rate automatically and the target date never moves.
+    const perMonth = monthsRemaining ? Number((remaining / monthsRemaining).toFixed(2)) : 0;
+    return {
+      id: row.id,
+      name: row.name,
+      targetAmount,
+      targetDate,
+      saved,
+      remaining,
+      monthsRemaining,
+      perMonth,
+      perWeek: Number((perMonth / 4.3).toFixed(2)),
+      percentComplete: targetAmount > 0 ? Math.min(100, Math.round((saved / targetAmount) * 100)) : 0,
+    };
+  });
+
+  const savingsCommitment = savingsGoals.reduce((sum, goal) => sum + goal.perMonth, 0);
+  const reductionAmount = Number((discretionaryTotal * (reductionPercent / 100)).toFixed(2));
+  const monthlyTarget = Math.max(0, Number((discretionaryTotal - savingsCommitment - reductionAmount).toFixed(2)));
+
+  // Four buckets of whole days, each measured against its own slice of the target
+  // so a 10-day final bucket is not judged against a 7-day allowance.
+  const bucketBounds = [[1, 7], [8, 14], [15, 21], [22, daysInMonth]];
+  const scorecard = bucketBounds.map(([from, to], index) => {
+    const spent = discretionaryRows
+      .filter((row) => {
+        const day = new Date(row.date).getDate();
+        return day >= from && day <= to;
+      })
+      .reduce((sum, row) => sum + row.amount, 0);
+    const days = to - from + 1;
+    const bucketTarget = Number((monthlyTarget * (days / daysInMonth)).toFixed(2));
+    return {
+      label: `Week ${index + 1}`,
+      range: `${from}–${to}`,
+      spent: Number(spent.toFixed(2)),
+      target: bucketTarget,
+      delta: Number((spent - bucketTarget).toFixed(2)),
+      over: spent > bucketTarget,
+    };
+  });
+
+  // What the month actually did with the money: earned, spent, moved to savings, and
+  // the remainder sitting in checking. A cheap rent month shows up here as a wider
+  // gap rather than as savings, because nothing was moved.
+  const anchorMonthPrefix = anchorMonthStart.slice(0, 7);
+  const savedThisMonth = transferRows.rows
+    .filter((row) => row.transaction_date.toISOString().slice(0, 7) === anchorMonthPrefix)
+    .reduce((sum, row) => sum + Number(row.amount), 0);
+  const monthSpend = fixedTotal + discretionaryTotal;
+  const unallocated = monthIncome - monthSpend - savedThisMonth;
+
+  return {
+    hasData: true,
+    anchorMonth: anchorMonthStart,
+    anchorLabel: anchorDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+    declaredRent,
+    reductionPercent,
+    rentDetected: rent ? Number(rent.amount.toFixed(2)) : null,
+    monthIncome: Number(monthIncome.toFixed(2)),
+    savedThisMonth: Number(savedThisMonth.toFixed(2)),
+    unallocated: Number(unallocated.toFixed(2)),
+    totalSpend: Number((fixedTotal + discretionaryTotal).toFixed(2)),
+    fixedTotal: Number(fixedTotal.toFixed(2)),
+    fixedBreakdown,
+    discretionary: Number(discretionaryTotal.toFixed(2)),
+    savingsCommitment: Number(savingsCommitment.toFixed(2)),
+    reductionAmount,
+    monthlyTarget,
+    weeklyAllowance: Number((monthlyTarget / 4.3).toFixed(2)),
+    dailyAllowance: Number((monthlyTarget / daysInMonth).toFixed(2)),
+    savedPool: Number(savedPool.toFixed(2)),
+    savingsGoals,
+    scorecard,
+    maxGoals: MAX_SAVINGS_GOALS,
+  };
+}
+
+app.get('/api/goals', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  try {
+    return res.json(await buildGoalsPayload(req.user.sub));
+  } catch (error) {
+    console.error('Goals fetch failed:', error);
+    return res.status(500).json({ error: 'Unable to load goals.' });
+  }
+});
+
+app.put('/api/goals/settings', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  // Rent is detected from the statement now, so the column is only still here to
+  // avoid a migration; callers no longer send it.
+  const declaredRent = Number(req.body?.declaredRent ?? 0);
+  const reductionPercent = Number(req.body?.reductionPercent);
+
+  if (!Number.isFinite(declaredRent) || declaredRent < 0) {
+    return res.status(400).json({ error: 'Rent must be a positive number.' });
+  }
+  if (!Number.isFinite(reductionPercent) || reductionPercent < 0 || reductionPercent > 50) {
+    return res.status(400).json({ error: 'Reduction must be between 0 and 50 percent.' });
+  }
+
+  try {
+    await query(
+      `INSERT INTO goal_settings (user_id, declared_rent, reduction_percent, updated_at)
+       VALUES ($1, $2, $3, NOW())
+       ON CONFLICT (user_id) DO UPDATE
+         SET declared_rent = EXCLUDED.declared_rent,
+             reduction_percent = EXCLUDED.reduction_percent,
+             updated_at = NOW()`,
+      [req.user.sub, declaredRent, Math.round(reductionPercent)]
+    );
+    return res.json(await buildGoalsPayload(req.user.sub));
+  } catch (error) {
+    console.error('Goal settings save failed:', error);
+    return res.status(500).json({ error: 'Unable to save settings.' });
+  }
+});
+
+app.post('/api/goals/savings', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  const name = String(req.body?.name || '').trim();
+  const targetAmount = Number(req.body?.targetAmount);
+  const targetDate = req.body?.targetDate || null;
+
+  if (!name) return res.status(400).json({ error: 'Give the goal a name.' });
+  if (!Number.isFinite(targetAmount) || targetAmount <= 0) {
+    return res.status(400).json({ error: 'Target amount must be greater than zero.' });
+  }
+  if (targetDate && Number.isNaN(new Date(targetDate).getTime())) {
+    return res.status(400).json({ error: 'Target date is not a valid date.' });
+  }
+
+  try {
+    const countRow = await query('SELECT COUNT(*) AS count FROM savings_goals WHERE user_id = $1', [req.user.sub]);
+    if (Number(countRow.rows[0].count) >= MAX_SAVINGS_GOALS) {
+      return res.status(400).json({ error: `You can track ${MAX_SAVINGS_GOALS} savings goals at a time. Remove one to add another.` });
+    }
+
+    await query(
+      'INSERT INTO savings_goals (user_id, name, target_amount, target_date) VALUES ($1, $2, $3, $4)',
+      [req.user.sub, name, targetAmount, targetDate]
+    );
+    return res.json(await buildGoalsPayload(req.user.sub));
+  } catch (error) {
+    console.error('Savings goal create failed:', error);
+    return res.status(500).json({ error: 'Unable to create the goal.' });
+  }
+});
+
+app.delete('/api/goals/savings/:id', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  try {
+    await query('DELETE FROM savings_goals WHERE id = $1 AND user_id = $2', [req.params.id, req.user.sub]);
+    return res.json(await buildGoalsPayload(req.user.sub));
+  } catch (error) {
+    console.error('Savings goal delete failed:', error);
+    return res.status(500).json({ error: 'Unable to remove the goal.' });
   }
 });
 

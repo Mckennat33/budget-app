@@ -570,3 +570,280 @@ header p {
 .logout-button:hover {
   background: #f3f4f6;
 }
+
+/* ---------------- Goals ---------------- */
+
+.goals-page {
+  display: grid;
+  gap: 18px;
+}
+
+.goals-header h2 {
+  margin: 0 0 4px;
+}
+
+.goals-subtitle {
+  margin: 0;
+  color: #6b7280;
+}
+
+.goals-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.goals-help {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.94rem;
+  max-width: 68ch;
+}
+
+.goals-note {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.goals-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.goals-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.goals-form input,
+.goals-form select {
+  font: inherit;
+  padding: 9px 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111827;
+  min-width: 150px;
+}
+
+.goals-form input:focus-visible,
+.goals-form select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.goals-ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.goals-ledger td {
+  padding: 7px 0;
+}
+
+.goals-ledger td.num {
+  text-align: right;
+  font-weight: 600;
+}
+
+.goals-ledger tr.dim td {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.goals-ledger tr.rule td {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 11px;
+  font-weight: 700;
+}
+
+.goals-ledger tr.total td {
+  color: #111827;
+  font-size: 1.05rem;
+}
+
+.allowance-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.allowance-cell {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 4px;
+  background: #f9fafb;
+}
+
+.allowance-cell.primary {
+  background: #111827;
+  border-color: #111827;
+}
+
+.allowance-cell .k {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.allowance-cell .v {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #111827;
+}
+
+.allowance-cell.primary .k { color: #9ca3af; }
+.allowance-cell.primary .v { color: #ffffff; }
+
+.savings-list {
+  display: grid;
+  gap: 14px;
+}
+
+.savings-goal {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.savings-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.savings-name {
+  font-weight: 700;
+  color: #111827;
+}
+
+.savings-meta {
+  font-size: 0.88rem;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.savings-remove {
+  font: inherit;
+  font-size: 0.85rem;
+  color: #6b7280;
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 5px 11px;
+  cursor: pointer;
+}
+
+.savings-remove:hover {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.savings-track {
+  height: 12px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.savings-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #2563eb;
+  transition: width 0.25s ease;
+}
+
+.savings-rates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.savings-rates b {
+  color: #111827;
+}
+
+.savings-warning {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.scorecard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.scorecard-week {
+  border: 1px solid #e5e7eb;
+  border-left-width: 3px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.scorecard-week .wk {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.scorecard-week .amt {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.scorecard-week .delta {
+  font-size: 0.85rem;
+}
+
+.scorecard-week .range {
+  font-size: 0.76rem;
+  color: #9ca3af;
+}
+
+.scorecard-week.under { border-left-color: #22c55e; }
+.scorecard-week.under .amt,
+.scorecard-week.under .delta { color: #15803d; }
+
+.scorecard-week.over { border-left-color: #ef4444; }
+.scorecard-week.over .amt,
+.scorecard-week.over .delta { color: #b91c1c; }
+
+.goals-form-inline {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 14px;
+}
+
+.goals-ledger td.num.negative {
+  color: #b91c1c;
+}

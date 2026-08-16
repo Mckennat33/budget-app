@@ -54,6 +54,27 @@ export async function ensureSchema() {
       category TEXT NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+
+    -- One row per user: the declared fixed costs the statements cannot identify
+    -- on their own (rent arrives as an unlabelled check) plus the optional
+    -- belt-tightening percentage applied to the discretionary budget.
+    CREATE TABLE IF NOT EXISTS goal_settings (
+      user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      declared_rent NUMERIC NOT NULL DEFAULT 0,
+      reduction_percent INTEGER NOT NULL DEFAULT 0,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    -- Capped at two per user by the API, not by a constraint, so the limit can
+    -- be raised without a migration.
+    CREATE TABLE IF NOT EXISTS savings_goals (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      target_amount NUMERIC NOT NULL,
+      target_date DATE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
 }
 

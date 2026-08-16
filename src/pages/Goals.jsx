@@ -1,8 +1,334 @@
-export default function Goals() {
+import { useEffect, useState } from 'react';
+
+const currency = (value) => `$${Number(value || 0).toFixed(2)}`;
+
+export default function Goals({ token }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const [reductionInput, setReductionInput] = useState('0');
+  const [goalName, setGoalName] = useState('');
+  const [goalAmount, setGoalAmount] = useState('');
+  const [goalDate, setGoalDate] = useState('');
+
+  const applyPayload = (payload) => {
+    setData(payload);
+    setReductionInput(String(payload.reductionPercent ?? 0));
+  };
+
+  const request = async (path, options = {}) => {
+    const response = await fetch(path, {
+      ...options,
+      headers: {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || 'Something went wrong.');
+    return payload;
+  };
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const payload = await request('/api/goals');
+        if (active) applyPayload(payload);
+      } catch (fetchError) {
+        if (active) setError(fetchError.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => { active = false; };
+  }, [token]);
+
+  const submit = async (path, options) => {
+    setSaving(true);
+    setError('');
+    try {
+      applyPayload(await request(path, options));
+      return true;
+    } catch (submitError) {
+      setError(submitError.message);
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveSettings = (event) => {
+    event.preventDefault();
+    submit('/api/goals/settings', {
+      method: 'PUT',
+      body: JSON.stringify({ reductionPercent: Number(reductionInput || 0) }),
+    });
+  };
+
+  const addGoal = async (event) => {
+    event.preventDefault();
+    const ok = await submit('/api/goals/savings', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: goalName,
+        targetAmount: Number(goalAmount),
+        targetDate: goalDate || null,
+      }),
+    });
+    if (ok) {
+      setGoalName('');
+      setGoalAmount('');
+      setGoalDate('');
+    }
+  };
+
+  const removeGoal = (id) => submit(`/api/goals/savings/${id}`, { method: 'DELETE' });
+
+  if (loading) {
+    return (
+      <div className="page-panel">
+        <h2>Goals</h2>
+        <p>Loading your budget...</p>
+      </div>
+    );
+  }
+
+  const goals = data?.savingsGoals || [];
+  const atGoalLimit = goals.length >= (data?.maxGoals ?? 2);
+
   return (
-    <div className="page-panel">
-      <h2>Goals</h2>
-      <p>Set and track your savings and spending goals.</p>
+    <div className="page-panel goals-page">
+      <section className="goals-header">
+        <div>
+          <h2>Goals</h2>
+          <p className="goals-subtitle">
+            {data?.hasData
+              ? `Based on ${data.anchorLabel}, your most recent statement.`
+              : 'Upload a statement to start building your budget.'}
+          </p>
+        </div>
+      </section>
+
+      {error && <div className="overview-error">{error}</div>}
+
+      {data?.hasData && (
+        <section className="goals-card">
+          <div className="section-title">Where the money goes</div>
+          <table className="goals-ledger">
+            <tbody>
+              <tr>
+                <td>Total spend</td>
+                <td className="num">{currency(data.totalSpend)}</td>
+              </tr>
+              {data.fixedBreakdown.map((item) => (
+                <tr key={item.label} className="dim">
+                  <td>&nbsp;&nbsp;{item.label}</td>
+                  <td className="num">−{currency(item.amount).slice(1)}</td>
+                </tr>
+              ))}
+              <tr className="rule">
+                <td>Discretionary</td>
+                <td className="num">{currency(data.discretionary)}</td>
+              </tr>
+              {data.savingsCommitment > 0 && (
+                <tr className="dim">
+                  <td>&nbsp;&nbsp;Savings goals</td>
+                  <td className="num">−{currency(data.savingsCommitment).slice(1)}</td>
+                </tr>
+              )}
+              {data.reductionAmount > 0 && (
+                <tr className="dim">
+                  <td>&nbsp;&nbsp;Reduction ({data.reductionPercent}%)</td>
+                  <td className="num">−{currency(data.reductionAmount).slice(1)}</td>
+                </tr>
+              )}
+              <tr className="rule total">
+                <td>Monthly target</td>
+                <td className="num">{currency(data.monthlyTarget)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="allowance-row">
+            <div className="allowance-cell primary">
+              <span className="k">Weekly allowance</span>
+              <span className="v">{currency(data.weeklyAllowance)}</span>
+            </div>
+            <div className="allowance-cell">
+              <span className="k">Daily</span>
+              <span className="v">{currency(data.dailyAllowance)}</span>
+            </div>
+            <div className="allowance-cell">
+              <span className="k">Monthly</span>
+              <span className="v">{currency(data.monthlyTarget)}</span>
+            </div>
+          </div>
+
+          <form className="goals-form goals-form-inline" onSubmit={saveSettings}>
+            <label>
+              <span>Aim to spend less by</span>
+              <select value={reductionInput} onChange={(event) => setReductionInput(event.target.value)}>
+                <option value="0">No reduction</option>
+                <option value="5">5%</option>
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+                <option value="20">20%</option>
+              </select>
+            </label>
+            <button type="submit" className="upload-button" disabled={saving}>
+              {saving ? 'Saving...' : 'Apply'}
+            </button>
+          </form>
+        </section>
+      )}
+
+      {data?.hasData && (
+        <section className="goals-card">
+          <div className="section-title">Where {data.anchorLabel} landed</div>
+          <p className="goals-help">
+            Money left over is not counted as saved — it only becomes savings when you
+            move it. A cheaper month shows up here as a wider gap.
+          </p>
+          <table className="goals-ledger">
+            <tbody>
+              <tr>
+                <td>Income</td>
+                <td className="num">{currency(data.monthIncome)}</td>
+              </tr>
+              <tr className="dim">
+                <td>&nbsp;&nbsp;Spent</td>
+                <td className="num">−{currency(data.totalSpend).slice(1)}</td>
+              </tr>
+              <tr className="dim">
+                <td>&nbsp;&nbsp;Moved to savings</td>
+                <td className="num">−{currency(data.savedThisMonth).slice(1)}</td>
+              </tr>
+              <tr className="rule total">
+                <td>Left in checking</td>
+                <td className={`num ${data.unallocated < 0 ? 'negative' : ''}`}>
+                  {currency(data.unallocated)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          {data.unallocated > 0 && (
+            <p className="goals-note">
+              {currency(data.unallocated)} sat unspent and unmoved. Transferring it to
+              savings is what turns it into progress on a goal.
+            </p>
+          )}
+        </section>
+      )}
+
+      <section className="goals-card">
+        <div className="section-title">Savings goals</div>
+        <p className="goals-help">
+          Progress comes from transfers to savings found in your statements.
+          {goals.length > 1 && ' With two goals, savings are split in proportion to their targets.'}
+        </p>
+
+        {goals.length === 0 && <p className="goals-note">No goals yet. Add one below.</p>}
+
+        <div className="savings-list">
+          {goals.map((goal) => (
+            <article key={goal.id} className="savings-goal">
+              <div className="savings-head">
+                <div>
+                  <div className="savings-name">{goal.name}</div>
+                  <div className="savings-meta">
+                    {currency(goal.saved)} of {currency(goal.targetAmount)}
+                    {goal.monthsRemaining ? ` · ${goal.monthsRemaining} months left` : ' · no deadline'}
+                  </div>
+                </div>
+                <button type="button" className="savings-remove" onClick={() => removeGoal(goal.id)} disabled={saving}>
+                  Remove
+                </button>
+              </div>
+
+              <div className="savings-track">
+                <div className="savings-fill" style={{ width: `${goal.percentComplete}%` }} />
+              </div>
+
+              {goal.monthsRemaining ? (
+                <div className="savings-rates">
+                  <span><b>{currency(goal.perMonth)}</b> per month</span>
+                  <span><b>{currency(goal.perWeek)}</b> per week</span>
+                  <span>{goal.percentComplete}% complete</span>
+                </div>
+              ) : (
+                <div className="savings-rates">
+                  <span>Set a target date to get a weekly rate.</span>
+                </div>
+              )}
+
+              {data?.hasData && goal.perMonth > data.discretionary && (
+                <p className="savings-warning">
+                  This needs {currency(goal.perMonth)} a month, more than the {currency(data.discretionary)} of
+                  discretionary spending you had in {data.anchorLabel}. Push the date back or lower the target.
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
+
+        {atGoalLimit ? (
+          <p className="goals-note">You&rsquo;re tracking the maximum of {data.maxGoals} goals. Remove one to add another.</p>
+        ) : (
+          <form className="goals-form" onSubmit={addGoal}>
+            <label>
+              <span>What for</span>
+              <input
+                type="text"
+                value={goalName}
+                onChange={(event) => setGoalName(event.target.value)}
+                placeholder="Flight to Denver"
+              />
+            </label>
+            <label>
+              <span>Target</span>
+              <input
+                type="number"
+                min="1"
+                step="0.01"
+                value={goalAmount}
+                onChange={(event) => setGoalAmount(event.target.value)}
+                placeholder="400"
+              />
+            </label>
+            <label>
+              <span>By when</span>
+              <input type="date" value={goalDate} onChange={(event) => setGoalDate(event.target.value)} />
+            </label>
+            <button type="submit" className="upload-button" disabled={saving}>Add goal</button>
+          </form>
+        )}
+      </section>
+
+      {data?.hasData && (
+        <section className="goals-card">
+          <div className="section-title">How {data.anchorLabel} went</div>
+          <p className="goals-help">
+            Discretionary spending week by week, against the allowance for those days.
+          </p>
+          <div className="scorecard">
+            {data.scorecard.map((week) => (
+              <div key={week.label} className={`scorecard-week ${week.over ? 'over' : 'under'}`}>
+                <span className="wk">{week.label}</span>
+                <span className="amt">{currency(week.spent)}</span>
+                <span className="delta">
+                  {week.over ? '+' : '−'}{currency(Math.abs(week.delta)).slice(1)} {week.over ? 'over' : 'under'}
+                </span>
+                <span className="range">Days {week.range}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
