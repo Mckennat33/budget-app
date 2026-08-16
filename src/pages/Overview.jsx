@@ -39,6 +39,8 @@ export default function Overview({ token }) {
   const [error, setError] = useState('');
   const [uploadDebug, setUploadDebug] = useState(null);
   const [expandedCategory, setExpandedCategory] = useState(null);
+  const [statements, setStatements] = useState([]);
+  const [removing, setRemoving] = useState(null);
   const fileInputRef = useRef(null);
 
   const fetchOverview = async () => {
@@ -110,9 +112,51 @@ export default function Overview({ token }) {
     }
   };
 
+  const fetchStatements = async () => {
+    if (!token) return;
+    try {
+      const response = await fetch('/api/statements', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await response.json();
+      if (response.ok) {
+        setStatements([...(data.statements || []), ...(data.legacyMonths || [])]);
+      }
+    } catch {
+      // The list is supplementary; a failure here should not break the page.
+    }
+  };
+
   useEffect(() => {
     fetchOverview();
   }, [token, showAll, selectedMonth]);
+
+  useEffect(() => {
+    fetchStatements();
+  }, [token]);
+
+  const removeStatement = async (entry) => {
+    const confirmed = window.confirm(
+      `Remove ${entry.label}? This deletes the ${entry.transactionCount} transactions it added.`
+    );
+    if (!confirmed) return;
+
+    setRemoving(entry.id);
+    setError('');
+    try {
+      const path = entry.kind === 'month'
+        ? `/api/statements/month/${entry.id}`
+        : `/api/statements/${entry.id}`;
+      const response = await fetch(path, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Unable to remove that statement.');
+      setStatusMessage(`Removed ${data.removed} transactions.`);
+      await fetchStatements();
+      await fetchOverview();
+    } catch (removeError) {
+      setError(removeError.message);
+    } finally {
+      setRemoving(null);
+    }
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -278,6 +322,39 @@ export default function Overview({ token }) {
           </div>
         </article>
       </section>
+
+      {statements.length > 0 && (
+        <section className="overview-categories">
+          <div className="section-title">Uploaded statements</div>
+          <p className="statement-help">
+            Removing a statement deletes the transactions it brought in.
+          </p>
+          <div className="statement-list">
+            {statements.map((entry) => (
+              <div key={`${entry.kind}-${entry.id}`} className="statement-row">
+                <div className="statement-info">
+                  <span className="statement-label">{entry.label}</span>
+                  <span className="statement-meta">
+                    {entry.transactionCount} transactions
+                    {entry.periodStart && entry.periodEnd && (
+                      <> · {entry.periodStart} to {entry.periodEnd}</>
+                    )}
+                    {entry.kind === 'month' && <> · uploaded before statement tracking</>}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="statement-remove"
+                  onClick={() => removeStatement(entry)}
+                  disabled={removing === entry.id}
+                >
+                  {removing === entry.id ? 'Removing...' : 'Remove'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="overview-categories">
         <div className="section-title">Top categories</div>

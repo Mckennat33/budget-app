@@ -103,7 +103,7 @@ function normalizeAmount(rawAmount) {
 // Movements between the user's own accounts are not income or spending. Tagging them
 // here keeps them out of both totals (they are excluded from the overview queries) and
 // out of the category breakdown, which only lists the eight spending categories.
-const TRANSFER_PATTERN = /\btransfer\s+(from|to)\b|venmo\s+cashout|\bzelle\b|\bwire\s+transfer\b/i;
+const TRANSFER_PATTERN = /\btransfer\s+(from|to)\b|venmo\s+cashout|\bzelle\b|\bwire\s+transfer\b|\bqapital\b/i;
 
 function isTransfer(description) {
   return TRANSFER_PATTERN.test(description || '');
@@ -133,7 +133,9 @@ function guessCategory(description) {
   if (/robinhood|fidelity|vanguard|schwab|etrade|e\*trade|coinbase|betterment|wealthfront|acorns|stash|brokerage|\binvest(ing|ment)?\b|\bira\b|401k/i.test(text)) {
     return 'Investing';
   }
-  if (/groc|supermarket|whole foods|costco|walmart|aldi|trader joe|instacart|safeway|kroger|publix|sprouts/i.test(text)) {
+  // Target sits here rather than in Shopping because it is where the weekly grocery
+  // run happens. It has to stay ahead of the Shopping rule, which also matches it.
+  if (/groc|supermarket|whole foods|costco|walmart|aldi|trader joe|instacart|safeway|kroger|publix|sprouts|\btarget\b|jewel|mariano|7-eleven|convenient food/i.test(text)) {
     return 'Groceries';
   }
   // Word boundaries matter here: a bare "bus" matched "business" in statement
@@ -205,6 +207,24 @@ function extractFallbackYear(pdfText) {
   return new Date().getFullYear();
 }
 
+// A statement only ever reports the past. A future date means the year rolled over
+// mid-statement: December rows on a statement whose header year is the following
+// January get stamped with the header year and land 12 months late.
+function correctFutureDate(isoDate) {
+  if (!isoDate) return isoDate;
+  const parsed = new Date(`${isoDate}T00:00:00`);
+  if (Number.isNaN(parsed.getTime()) || parsed <= new Date()) return isoDate;
+  parsed.setFullYear(parsed.getFullYear() - 1);
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${parsed.getFullYear()}-${month}-${day}`;
+}
+
+// Chase prints a paragraph of legalese about converted checks directly in the
+// transaction area. It carries a date and the check amount, so it otherwise parses
+// into a phantom transaction that mirrors the real check with the opposite sign.
+const STATEMENT_NOISE = /if you see a check description|image of this check|not able to return the check|converted for electronic payment/i;
+
 function parsePdfTransactions(pdfText) {
   const rawLines = pdfText
     .replace(/\u00A0/g, ' ')
@@ -234,12 +254,17 @@ function parsePdfTransactions(pdfText) {
       continue;
     }
 
+    if (STATEMENT_NOISE.test(line)) {
+      debugLines.push({ line: line.slice(0, 120), reason: 'statement boilerplate, not a transaction' });
+      continue;
+    }
+
     const dateMatch = line.match(dateRegex);
     const amountMatches = Array.from(line.matchAll(amountRegex)).map((match) => match[0]);
 
     if (dateMatch && amountMatches.length > 0) {
       const rawDate = dateMatch[1];
-      const parsedDate = normalizeDate(rawDate, fallbackYear);
+      const parsedDate = correctFutureDate(normalizeDate(rawDate, fallbackYear));
       if (!parsedDate) {
         debugLines.push({ line, reason: 'invalid date format', rawDate });
         continue;
@@ -398,14 +423,25 @@ app.post('/api/upload', authMiddleware, upload.single('statement'), async (req, 
       return res.status(400).json(response);
     }
 
+    const dates = transactions.map((transaction) => transaction.date).sort();
+
     await query('BEGIN');
-    const insertText = 'INSERT INTO transactions (user_id, transaction_date, description, amount, category) VALUES ($1, $2, $3, $4, $5)';
+    // Recording the upload first lets every row carry its origin, so the statement
+    // can be removed later without guessing which transactions came from it.
+    const statementRow = await query(
+      `INSERT INTO statements (user_id, filename, transaction_count, period_start, period_end)
+       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+      [req.user.sub, req.file.originalname, transactions.length, dates[0] || null, dates[dates.length - 1] || null]
+    );
+    const statementId = statementRow.rows[0].id;
+
+    const insertText = 'INSERT INTO transactions (user_id, transaction_date, description, amount, category, statement_id) VALUES ($1, $2, $3, $4, $5, $6)';
     for (const transaction of transactions) {
-      await query(insertText, [req.user.sub, transaction.date, transaction.description, transaction.amount, transaction.category]);
+      await query(insertText, [req.user.sub, transaction.date, transaction.description, transaction.amount, transaction.category, statementId]);
     }
     await query('COMMIT');
 
-    return res.json({ message: 'Uploaded successfully', count: transactions.length });
+    return res.json({ message: 'Uploaded successfully', count: transactions.length, statementId });
   } catch (error) {
     await query('ROLLBACK').catch(() => {});
     console.error('Upload failed:', error);
@@ -709,7 +745,9 @@ const LOAN_PATTERN = /student\s+ln|student\s+loan|dept\s+education|navient|nelne
 // and health are technically discretionary but not realistically cuttable, so the
 // spending allowance is scoped to these.
 const FLEXIBLE_CATEGORIES = new Set(['Dining Takeout', 'Shopping', 'Other']);
-const SAVINGS_TRANSFER_PATTERN = /transfer\s+to\s+sav/i;
+// Money heading out to a savings destination. Qapital is a savings app, so a debit to
+// it is money set aside; the matching credit back is filtered out by the amount < 0.
+const SAVINGS_TRANSFER_PATTERN = /transfer\s+to\s+sav|\bqapital\b/i;
 const MAX_SAVINGS_GOALS = 2;
 
 // '2026-07-01' through the Date constructor is parsed as UTC midnight, which is the
@@ -986,6 +1024,16 @@ async function buildGoalsPayload(userId) {
   // What the month actually did with the money: earned, spent, moved to savings, and
   // the remainder sitting in checking. A cheap rent month shows up here as a wider
   // gap rather than as savings, because nothing was moved.
+  // Statement periods rarely line up with calendar months, so the newest month is
+  // often only half covered. Budgeting off it silently understates everything, so the
+  // shortfall is reported and the page warns instead.
+  const anchorDays = rowsByMonth.get(anchorKey) || [];
+  const lastCoveredDay = anchorDays.length > 0
+    ? Math.max(...anchorDays.map((row) => parseLocalDate(row.transaction_date).getDate()))
+    : 0;
+  const isCurrentMonth = anchorKey === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+  const anchorPartial = !isCurrentMonth && lastCoveredDay < daysInMonth - 5;
+
   const anchorMonthPrefix = anchorMonthStart.slice(0, 7);
   const savedThisMonth = transferRows.rows
     .filter((row) => row.transaction_date.toISOString().slice(0, 7) === anchorMonthPrefix)
@@ -1004,6 +1052,9 @@ async function buildGoalsPayload(userId) {
     savedThisMonth: Number(savedThisMonth.toFixed(2)),
     unallocated: Number(unallocated.toFixed(2)),
     freedThisMonth: Number(freedThisMonth.toFixed(2)),
+    anchorPartial,
+    anchorLastDay: lastCoveredDay,
+    anchorDaysInMonth: daysInMonth,
     previousDiscretionary: monthKeys.indexOf(anchorKey) > 0
       ? Number(summaries.get(monthKeys[monthKeys.indexOf(anchorKey) - 1]).discretionaryTotal.toFixed(2))
       : null,
@@ -1334,6 +1385,106 @@ app.get('/api/reports/waste', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Waste report failed:', error);
     return res.status(500).json({ error: 'Unable to run this report.' });
+  }
+});
+
+/* ---------------------------------------------------------------------------
+ * Statements
+ *
+ * Uploads made before statement tracking existed have no statement_id, so they are
+ * listed as one entry per month and removed by date range. Anything uploaded since
+ * is removed by its own id.
+ * ------------------------------------------------------------------------- */
+
+app.get('/api/statements', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  try {
+    const tracked = await query(
+      `SELECT s.id, s.filename, s.uploaded_at, s.period_start, s.period_end,
+              COUNT(t.id) AS transaction_count
+         FROM statements s
+         LEFT JOIN transactions t ON t.statement_id = s.id
+        WHERE s.user_id = $1
+        GROUP BY s.id
+        ORDER BY s.uploaded_at DESC`,
+      [req.user.sub]
+    );
+
+    const untracked = await query(
+      `SELECT to_char(date_trunc('month', transaction_date), 'YYYY-MM') AS month,
+              COUNT(*) AS transaction_count,
+              MIN(transaction_date) AS period_start,
+              MAX(transaction_date) AS period_end
+         FROM transactions
+        WHERE user_id = $1 AND statement_id IS NULL
+        GROUP BY month
+        ORDER BY month DESC`,
+      [req.user.sub]
+    );
+
+    const iso = (value) => (value ? value.toISOString().slice(0, 10) : null);
+
+    return res.json({
+      statements: tracked.rows.map((row) => ({
+        id: row.id,
+        kind: 'upload',
+        label: row.filename,
+        transactionCount: Number(row.transaction_count),
+        periodStart: iso(row.period_start),
+        periodEnd: iso(row.period_end),
+        uploadedAt: row.uploaded_at.toISOString(),
+      })),
+      legacyMonths: untracked.rows.map((row) => ({
+        id: row.month,
+        kind: 'month',
+        label: parseLocalDate(`${row.month}-01`).toLocaleString('default', { month: 'long', year: 'numeric' }),
+        transactionCount: Number(row.transaction_count),
+        periodStart: iso(row.period_start),
+        periodEnd: iso(row.period_end),
+      })),
+    });
+  } catch (error) {
+    console.error('Statement list failed:', error);
+    return res.status(500).json({ error: 'Unable to list statements.' });
+  }
+});
+
+app.delete('/api/statements/:id', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  try {
+    const owned = await query('SELECT id FROM statements WHERE id = $1 AND user_id = $2', [req.params.id, req.user.sub]);
+    if (owned.rows.length === 0) return res.status(404).json({ error: 'Statement not found.' });
+
+    await query('BEGIN');
+    const removed = await query('DELETE FROM transactions WHERE statement_id = $1 AND user_id = $2', [req.params.id, req.user.sub]);
+    await query('DELETE FROM statements WHERE id = $1 AND user_id = $2', [req.params.id, req.user.sub]);
+    await query('COMMIT');
+
+    return res.json({ message: 'Statement removed.', removed: removed.rowCount });
+  } catch (error) {
+    await query('ROLLBACK').catch(() => {});
+    console.error('Statement delete failed:', error);
+    return res.status(500).json({ error: 'Unable to remove that statement.' });
+  }
+});
+
+app.delete('/api/statements/month/:month', authMiddleware, async (req, res) => {
+  if (!dbAvailable) return res.status(503).json({ error: 'Database unavailable.' });
+  if (!/^\d{4}-\d{2}$/.test(req.params.month)) {
+    return res.status(400).json({ error: 'Month must look like 2026-03.' });
+  }
+  try {
+    const removed = await query(
+      `DELETE FROM transactions
+        WHERE user_id = $1
+          AND statement_id IS NULL
+          AND date_trunc('month', transaction_date) = date_trunc('month', $2::date)`,
+      [req.user.sub, `${req.params.month}-01`]
+    );
+    return res.json({ message: 'Transactions removed.', removed: removed.rowCount });
+  } catch (error) {
+    console.error('Month delete failed:', error);
+    return res.status(500).json({ error: 'Unable to remove that month.' });
   }
 });
 

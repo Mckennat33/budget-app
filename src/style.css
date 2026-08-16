@@ -1216,3 +1216,68 @@ header p {
 @media (max-width: 640px) {
   .report-headline { grid-template-columns: 1fr; }
 }
+
+/* ---------------- Uploaded statements ---------------- */
+
+.statement-help {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.statement-list {
+  display: grid;
+  gap: 10px;
+}
+
+.statement-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+}
+
+.statement-info {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.statement-label {
+  font-weight: 700;
+  color: #111827;
+  overflow-wrap: anywhere;
+}
+
+.statement-meta {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+
+.statement-remove {
+  font: inherit;
+  font-size: 0.85rem;
+  color: #6b7280;
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.statement-remove:hover:not(:disabled) {
+  color: #b91c1c;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.statement-remove:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

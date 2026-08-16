@@ -1,0 +1,194 @@
+id,user_id,transaction_date,description,amount,category,created_at
+635,1,2026-02-19,Card Purchase 02/17 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+636,1,2026-02-19,Card Purchase 02/18 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+637,1,2026-02-19,Card Purchase 02/18 365 Market L 888 432-32 Troy MI Card 3413,-4.42,Other,2026-08-16
+638,1,2026-02-19,Venmo Payment 1048405184216 Web ID: 3264681992,-41.75,Other,2026-08-16
+639,1,2026-02-20,Coyote Logis-Osv 0000702990 PPD ID: 00004399,3698.99,Other,2026-08-16
+640,1,2026-02-20,Card Purchase 02/19 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+641,1,2026-02-20,Card Purchase 02/19 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+642,1,2026-02-20,Card Purchase 02/19 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+643,1,2026-02-23,Card Purchase 02/20 City Pool Hall Chicago IL Card 3413,-28.5,Other,2026-08-16
+644,1,2026-02-23,Card Purchase 02/21 Spirits & Snacks Chicago IL Card 3413,-30.42,Dining Takeout,2026-08-16
+645,1,2026-02-23,Card Purchase With Pin 02/21 Target T-0942 Chicago IL Card 3413,-84.01,Shopping,2026-08-16
+646,1,2026-02-23,Card Purchase With Pin 02/22 Target T-0942 Chicago IL Card 3413,-69.7,Shopping,2026-08-16
+647,1,2026-02-23,Card Purchase 02/22 Spirits & Snacks Chicago IL Card 3413,-7.14,Dining Takeout,2026-08-16
+648,1,2026-02-24,Card Purchase 02/22 Myopic Books Chicago IL Card 3413,-14.32,Other,2026-08-16
+649,1,2026-02-25,Card Purchase 02/24 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+650,1,2026-02-25,Card Purchase 02/24 365 Market L 888 432-32 Troy MI Card 3413,-4.2,Other,2026-08-16
+651,1,2026-02-25,Peoples Gas Autopay PPD ID: 4361613900,-103.69,Rent & Utilities,2026-08-16
+652,1,2026-02-25,Card Purchase With Pin 02/25 Target T-0942 Chicago IL Card 3413 CHECKING SUMMARY TRANSACTION DETAIL *start*summary *end*summary *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-86.97,Shopping,2026-08-16
+653,1,2026-02-27,Coyote Logis-Osv Edipyments PPD ID: 3263101267,3099.94,Other,2026-08-16
+654,1,2026-02-27,Card Purchase 02/25 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+655,1,2026-02-27,Card Purchase 02/27 Tst* The HI-Lo Chicago IL Card 3413,-52.8,Dining Takeout,2026-08-16
+656,1,2026-02-27,Dept Education Student Ln PPD ID: 9102002601,-187.99,Other,2026-08-16
+657,1,2026-03-02,Venmo Cashout PPD ID: 5264681992,2879.84,Transfer,2026-08-16
+658,1,2026-03-02,Card Purchase 02/26 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+659,1,2026-03-02,Card Purchase 02/27 Spirits & Snacks Chicago IL Card 3413,-26.96,Dining Takeout,2026-08-16
+660,1,2026-03-02,Robinhood Funds 892953134 Web ID: 1464364776,-25,Investing,2026-08-16
+661,1,2026-03-02,Card Purchase With Pin 02/28 Target T-0942 Chicago IL Card 3413,-62.39,Shopping,2026-08-16
+662,1,2026-03-02,Venmo Payment 1048636595946 Web ID: 3264681992,-50,Other,2026-08-16
+663,1,2026-03-02,Venmo Payment 1048604794435 Web ID: 3264681992,-40,Other,2026-08-16
+664,1,2026-03-02,Chase Crd Autopay PPD ID: 4760039224,-594.47,Other,2026-08-16
+665,1,2026-03-02,Comcast-Xfinity Cable Svcs PPD ID: 0000213249,-177.88,Rent & Utilities,2026-08-16
+666,1,2026-03-02,Venmo Payment 1048656872811 Web ID: 3264681992,-95,Other,2026-08-16
+667,1,2026-03-03,Card Purchase 03/02 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+668,1,2026-03-03,Card Purchase 03/02 365 Market L 888 432-32 Troy MI Card 3413,-3.87,Other,2026-08-16
+669,1,2026-03-03,Card Purchase 03/02 365 Market L 888 432-32 Troy MI Card 3413,-3.86,Other,2026-08-16
+670,1,2026-03-03,Robinhood Funds 892953134 Web ID: 1464364776,-25,Investing,2026-08-16
+671,1,2026-03-04,Card Purchase 03/02 Emporium Logan Square Chicago IL Card 3413,-40.12,Dining Takeout,2026-08-16
+672,1,2026-03-04,Card Purchase 03/03 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+673,1,2026-03-04,Recurring Card Purchase 03/03 Spotify USA 877-7781161 NY Card 3413,-14.32,Subscriptions,2026-08-16
+674,1,2026-03-04,Card Purchase With Pin 03/04 Target T-0942 Chicago IL Card 3413,-76.24,Shopping,2026-08-16
+675,1,2026-03-05,Card Purchase 03/04 Spirits & Snacks Chicago IL Card 3413,-9.91,Dining Takeout,2026-08-16
+676,1,2026-03-05,Card Purchase 03/04 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+677,1,2026-03-06,Coyote Logis-Osv Payroll031 PPD ID: 00004399,3358.92,Other,2026-08-16
+678,1,2026-03-06,Card Purchase 03/05 Tst* The Remedy Chicago IL Card 3413,-22.38,Dining Takeout,2026-08-16
+679,1,2026-03-06,Venmo Payment 1048749499920 Web ID: 3264681992,-40,Other,2026-08-16
+680,1,2026-03-09,Robinhood Funds 892953134 Web ID: 1464364776,-25,Investing,2026-08-16
+681,1,2026-03-09,Card Purchase With Pin 03/08 Target T-0942 Chicago IL Card 3413,-54.3,Shopping,2026-08-16
+682,1,2026-03-09,Subscription Acorns SC9R49 Web ID: 9000142694,-3,Investing,2026-08-16
+683,1,2026-03-10,Card Purchase 03/09 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+684,1,2026-03-10,Card Purchase 03/09 Tst*Big Star Chicago IL Card 3413,-75.13,Dining Takeout,2026-08-16
+685,1,2026-03-11,Card Purchase 03/10 Spirits & Snacks Chicago IL Card 3413,-9.91,Dining Takeout,2026-08-16
+686,1,2026-03-11,Card Purchase 03/10 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+687,1,2026-03-11,Card Purchase 03/10 Tst*Surge Billiards Chicago IL Card 3413,-51.79,Dining Takeout,2026-08-16
+688,1,2026-03-11,Card Purchase With Pin 03/11 Target T-0942 Chicago IL Card 3413,-55.11,Shopping,2026-08-16
+689,1,2026-03-12,Card Purchase 03/10 Barnes & Noble #3484 Chicago IL Card 3413,-16.48,Other,2026-08-16
+690,1,2026-03-12,Card Purchase 03/11 365 Market L 888 432-32 Troy MI Card 3413,-1.65,Other,2026-08-16
+691,1,2026-03-12,Card Purchase With Pin 03/12 Disney Plus Wilmington De Card 3413,-14.32,Other,2026-08-16
+692,1,2026-03-13,Card Purchase 03/13 Tst* Bisous Chicago Chicago IL Card 3413,-81.7,Dining Takeout,2026-08-16
+693,1,2026-03-16,Card Purchase 03/13 Spirits & Snacks Chicago IL Card 3413,-9.91,Dining Takeout,2026-08-16
+694,1,2026-03-16,"Card Purchase 03/13 Tst*Duffys Last Call Chicago IL Card 3413 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. You were not charged a Monthly Service Fee ONE Account was linked chase.com/disclosures",-24.09,Dining Takeout,2026-08-16
+695,1,2026-03-16,Card Purchase 03/13 Tst*Duffys Last Call Chicago IL Card 3413,-24.09,Dining Takeout,2026-08-16
+696,1,2026-03-16,Recurring Card Purchase 03/14 LA Fitness 949-255-8100 CA Card 3413,-39.99,Health & Fitness,2026-08-16
+697,1,2026-03-16,Robinhood Funds 892953134 Web ID: 1464364776,-25,Investing,2026-08-16
+698,1,2026-03-16,Card Purchase 03/14 Chipotle 4082 Chicago IL Card 3413,-15.12,Dining Takeout,2026-08-16
+699,1,2026-03-16,Card Purchase 03/14 Sq *El Yunque Food And Chicago IL Card 3413,-21.64,Dining Takeout,2026-08-16
+700,1,2026-03-16,Card Purchase With Pin 03/15 Target T-0942 Chicago IL Card 3413,-68.44,Shopping,2026-08-16
+701,1,2026-03-16,Recurring Card Purchase 03/16 Scrimba Oslo Card 3413,-30,Other,2026-08-16
+702,1,2026-03-16,Recurring Card Purchase 03/16 Scrimba Oslo Card 3413,-25.35,Other,2026-08-16
+703,1,2026-03-17,Card Purchase 03/16 365 Market L 888 432-32 Troy MI Card 3413,-1.69,Other,2026-08-16
+704,1,2026-03-17,"Robinhood Funds 892953134 Web ID: 1464364776 on your CHASE TOTAL CHECKING account since you had of the following during the monthly statement period: in qualifying electronic deposits; or statement) average beginning day balance in this account, or in combination with any other linked qualifying personal deposits or investments; or to a qualifying checking account For more information about the qualifying accounts, deposits, investments or transactions to waive the Monthly Service Fee on this account (if applicable), or if you have any questions, please refer to the Additional Banking Services and Fees at or call us at the number listed on this statement. TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 3 of 4 -- 4 4	Page of Account Number: This Page Intentionally Left Blank -- 4 of 4 --",-25,Investing,2026-08-16
+705,1,2026-02-18,"Bank transaction If you see a check description in the Transaction Detail section, it means your check has already been converted for electronic payment. Because of this, we're not able to return the check to you or show you an image on Chase.com. ^ An image of this check may be available for you to view on Chase.com.",995,Other,2026-08-16
+706,1,2026-01-21,Card Purchase 01/20 365 Market L 888 432-32 Troy MI Card 3413,-3.4,Other,2026-08-16
+707,1,2026-01-21,Robinhood Funds 892953134 Web ID: 1464364776,-45.93,Investing,2026-08-16
+708,1,2026-01-21,Card Purchase With Pin 01/21 Target T-0942 Chicago IL Card 3413,-46.92,Shopping,2026-08-16
+709,1,2026-01-23,Coyote Logis-Osv 0000693784 PPD ID: 00004399,3019.27,Other,2026-08-16
+710,1,2026-01-23,Coyote Logis-Osv 0000693724 PPD ID: 00004399,4525.14,Other,2026-08-16
+711,1,2026-01-23,Card Purchase 01/22 365 Market L 888 432-32 Troy MI Card 3413,-3.4,Other,2026-08-16
+712,1,2026-01-23,Card Purchase 01/23 Tst* Burton Place Inc Chicago IL Card 3413,-23.11,Dining Takeout,2026-08-16
+713,1,2026-01-23,Card Purchase 01/23 Tst* Lg's Bar Chicago IL Card 3413,-33.65,Dining Takeout,2026-08-16
+714,1,2026-01-26,Card Purchase With Pin 01/24 Target T-0942 Chicago IL Card 3413,-83.58,Shopping,2026-08-16
+715,1,2026-01-26,Card Purchase With Pin 01/25 Target T-0942 Chicago IL Card 3413 CHECKING SUMMARY CHECKS PAID TRANSACTION DETAIL *start*summary *end*summary *start*checks paid section2 *end*checks paid section2 *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-43.41,Shopping,2026-08-16
+716,1,2026-01-27,Card Purchase 01/26 365 Market L 888 432-32 Troy MI Card 3413,-1.69,Other,2026-08-16
+717,1,2026-01-27,Dept Education Student Ln PPD ID: 9102002601,-187.99,Other,2026-08-16
+718,1,2026-01-27,Peoples Gas Autopay PPD ID: 4361613900,-108.88,Rent & Utilities,2026-08-16
+719,1,2026-01-28,Card Purchase 01/27 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+720,1,2026-01-28,Card Purchase With Pin 01/28 Target T-0942 Chicago IL Card 3413,-69.37,Shopping,2026-08-16
+721,1,2026-01-29,Card Purchase 01/28 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+722,1,2026-01-29,Card Purchase 01/28 Spirits & Snacks Chicago IL Card 3413,-9.91,Dining Takeout,2026-08-16
+723,1,2026-01-29,Card Purchase 01/29 Tst* Laugh Factory - Ch Chicago IL Card 3413,-77.41,Dining Takeout,2026-08-16
+724,1,2026-01-30,Qapital LLC Qapital IN 32010846265 Web ID: 1381219000,3826.37,Other,2026-08-16
+725,1,2026-01-30,Card Purchase 01/29 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+726,1,2026-02-02,Card Purchase 01/29 Myopic Books Chicago IL Card 3413,-32.07,Other,2026-08-16
+727,1,2026-02-02,Card Purchase 01/31 Emporium Logan Square Chicago IL Card 3413,-9.44,Dining Takeout,2026-08-16
+728,1,2026-02-02,Card Purchase With Pin 01/31 Target T-0942 Chicago IL Card 3413,-69.23,Shopping,2026-08-16
+729,1,2026-02-02,Card Purchase With Pin 02/01 Target T-0942 Chicago IL Card 3413,-32.9,Shopping,2026-08-16
+730,1,2026-02-02,Venmo Payment 1047965548128 Web ID: 3264681992,-30,Other,2026-08-16
+731,1,2026-02-02,Chase Crd Autopay PPD ID: 4760039224,-491.72,Other,2026-08-16
+732,1,2026-02-03,Card Purchase 02/02 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+733,1,2026-02-03,Card Purchase 02/02 Spirits & Snacks Chicago IL Card 3413,-9.91,Dining Takeout,2026-08-16
+734,1,2026-02-03,Comcast-Xfinity Cable Svcs PPD ID: 0000213249,-177.38,Rent & Utilities,2026-08-16
+735,1,2026-02-04,Card Purchase 02/03 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+736,1,2026-02-04,Recurring Card Purchase 02/03 Spotify USA 877-7781161 NY Card 3413,-13.22,Subscriptions,2026-08-16
+737,1,2026-02-04,Card Purchase With Pin 02/04 Target T-0942 Chicago IL Card 3413,-54.29,Shopping,2026-08-16
+738,1,2026-02-06,Coyote Logis-Osv 0000698455 PPD ID: 00004399,4434.3,Other,2026-08-16
+739,1,2026-02-06,Card Purchase 02/04 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+740,1,2026-02-09,Card Purchase 02/05 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+741,1,2026-02-09,Card Purchase 02/05 Emporium Logan Square Chicago IL Card 3413,-27.14,Dining Takeout,2026-08-16
+742,1,2026-02-09,Card Purchase 02/06 Spirits & Snacks Chicago IL Card 3413,-27.12,Dining Takeout,2026-08-16
+743,1,2026-02-09,Card Purchase 02/07 Tst*Kitschn On Roscoe Chicago IL Card 3413,-42.74,Dining Takeout,2026-08-16
+744,1,2026-02-09,Card Purchase 02/07 Spirits & Snacks Chicago IL Card 3413,-12.74,Dining Takeout,2026-08-16
+745,1,2026-02-09,Card Purchase With Pin 02/08 Target T-0942 Chicago IL Card 3413,-73.97,Shopping,2026-08-16
+746,1,2026-02-09,Subscription Acorns 7D9019 Web ID: 9000142694,-3,Investing,2026-08-16
+747,1,2026-02-10,Card Purchase 02/09 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+748,1,2026-02-10,Card Purchase 02/10 Sq *Mr. Taco's Restaura Chicago IL Card 3413,-6.62,Dining Takeout,2026-08-16
+749,1,2026-02-10,Card Purchase With Pin 02/10 Target T-0942 Chicago IL Card 3413,-89.71,Shopping,2026-08-16
+750,1,2026-02-11,"Card Purchase 02/10 Spirits & Snacks Chicago IL Card 3413 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of SM Account Number: not providers or government benefit providers, by using (i) the ACH network, (ii) the Real Time Payment or FedNow network, or (iii) third party services that facilitate payments to your debit card using the Visa or Mastercard network. investments.",-9.91,Dining Takeout,2026-08-16
+751,1,2026-02-12,Card Purchase With Pin 02/12 Disney Plus Wilmington De Card 3413,-14.33,Other,2026-08-16
+752,1,2026-02-13,Card Purchase 02/11 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+753,1,2026-02-13,Card Purchase 02/11 365 Market L 888 432-32 Troy MI Card 3413,-1.69,Other,2026-08-16
+754,1,2026-02-13,Card Purchase 02/12 Chipotle 1244 Chicago IL Card 3413,-10.36,Dining Takeout,2026-08-16
+755,1,2026-02-17,Card Purchase 02/12 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+756,1,2026-02-17,Card Purchase 02/13 Spirits & Snacks Chicago IL Card 3413,-18.08,Dining Takeout,2026-08-16
+757,1,2026-02-17,Recurring Card Purchase 02/14 LA Fitness 949-255-8100 CA Card 3413,-39.99,Health & Fitness,2026-08-16
+758,1,2026-02-17,Comed Payments PPD ID: 2360938600,-79.58,Rent & Utilities,2026-08-16
+759,1,2026-02-17,Card Purchase With Pin 02/14 Target T-0942 Chicago IL Card 3413,-64.63,Shopping,2026-08-16
+760,1,2026-02-17,Recurring Card Purchase 02/16 Scrimba Oslo Card 3413,-30,Other,2026-08-16
+761,1,2026-02-17,Recurring Card Purchase 02/16 Scrimba Oslo Card 3413,-25.35,Other,2026-08-16
+762,1,2026-02-17,Card Purchase 02/16 365 Market L 888 432-32 Troy MI Card 3413,-4.31,Other,2026-08-16
+763,1,2026-02-17,Card Purchase 02/16 365 Market L 888 432-32 Troy MI Card 3413,-4.42,Other,2026-08-16
+764,1,2026-02-17,Card Purchase With Pin 02/16 Target T-0942 Chicago IL Card 3413,-83.23,Shopping,2026-08-16
+765,1,2026-02-18,Card Purchase 02/17 Spirits & Snacks Chicago IL Card 3413,-9.91,Dining Takeout,2026-08-16
+766,1,2026-02-18,Check # 1194,-995,Other,2026-08-16
+767,1,2026-02-18,"Card Purchase With Pin 02/18 Target T-0942 Chicago IL Card 3413 A Monthly Service Fee was charged to your Chase Total Checking account. Here are the three ways you can avoid this fee during any statement period. statement) TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",-87.58,Shopping,2026-08-16
+768,1,2026-01-15,"Bank transaction If you see a check description in the Transaction Detail section, it means your check has already been converted for electronic payment. Because of this, we're not able to return the check to you or show you an image on Chase.com. ^ An image of this check may be available for you to view on Chase.com.",995,Other,2026-08-16
+769,1,2026-12-17,Card Purchase 12/16 365 Market L 888 432-32 Troy MI Card 3413,-1,Other,2026-08-16
+770,1,2026-12-17,Card Purchase 12/16 City Pool Hall Chicago IL Card 3413,-99.52,Other,2026-08-16
+771,1,2026-12-17,Card Purchase With Pin 12/17 Target T-0942 Chicago IL Card 3413 CHECKING SUMMARY CHECKS PAID TRANSACTION DETAIL *start*after address message area1 *end*after address message area1 *start*summary *end*summary *start*checks paid section2 *end*checks paid section2 *start*transaction detail *end*transaction detail -- 1 of 4 -- 2 4	Page of Account Number:,-47.78,Shopping,2026-08-16
+772,1,2026-12-18,Card Purchase 12/17 365 Market L 888 432-32 Troy MI Card 3413,-1,Other,2026-08-16
+773,1,2026-12-18,Card Purchase With Pin 12/18 Target T-0942 Chicago IL Card 3413,-11,Shopping,2026-08-16
+774,1,2026-12-19,Card Purchase 12/18 Dunkin #351524 Q35 Chicago IL Card 3413,-3.42,Other,2026-08-16
+775,1,2026-12-19,Card Purchase 12/18 365 Market L 888 432-32 Troy MI Card 3413,-1,Other,2026-08-16
+776,1,2026-12-19,12/19 Withdrawal,-40,Other,2026-08-16
+777,1,2026-12-22,Card Purchase With Pin 12/20 Target T-0942 Chicago IL Card 3413,-39.53,Shopping,2026-08-16
+778,1,2026-12-22,Card Purchase With Pin 12/20 7-Eleven Chicago IL Card 3413,-9.69,Other,2026-08-16
+779,1,2026-12-22,Card Purchase 12/21 Tst*Slippery Slope & He Chicago IL Card 3413,-21.95,Dining Takeout,2026-08-16
+780,1,2026-12-22,Card Purchase With Pin 12/22 Target T-0942 Chicago IL Card 3413,-58.89,Shopping,2026-08-16
+781,1,2026-12-23,Card Purchase With Pin 12/23 Target T-0942 Chicago IL Card 3413,-16.02,Shopping,2026-08-16
+782,1,2026-12-24,Card Purchase With Pin 12/24 Target T-0942 Chicago IL Card 3413,-39.64,Shopping,2026-08-16
+783,1,2026-12-26,Venmo Payment 1047179691356 Web ID: 3264681992,-70,Other,2026-08-16
+784,1,2026-12-26,Card Purchase With Pin 12/26 Target T-0942 Chicago IL Card 3413,-40.07,Shopping,2026-08-16
+785,1,2026-12-26,Venmo Payment 1047201360144 Web ID: 3264681992,-15,Other,2026-08-16
+786,1,2026-12-29,Dept Education Student Ln PPD ID: 9102002601,-187.99,Other,2026-08-16
+787,1,2026-12-29,Card Purchase With Pin 12/27 Target T-0942 Chicago IL Card 3413,-35.85,Shopping,2026-08-16
+788,1,2026-12-30,Peoples Gas Autopay PPD ID: 4361613900,-69.1,Rent & Utilities,2026-08-16
+789,1,2026-12-30,Card Purchase With Pin 12/30 Target T-0942 Chicago IL Card 3413,-100.85,Shopping,2026-08-16
+790,1,2026-12-31,Coyote Logis-Osv 0000686165 PPD ID: 00004399,2406.29,Other,2026-08-16
+791,1,2026-01-02,Card Purchase 12/31 Spirits & Snacks Chicago IL Card 3413,-25.56,Dining Takeout,2026-08-16
+792,1,2026-01-02,Card Purchase With Pin 01/01 Target T-0942 Chicago IL Card 3413,-57.28,Shopping,2026-08-16
+793,1,2026-01-02,Chase Crd Autopay PPD ID: 4760039224,-820.51,Other,2026-08-16
+794,1,2026-01-05,Card Purchase With Pin 01/03 Target T-0942 Chicago IL Card 3413,-50.86,Shopping,2026-08-16
+795,1,2026-01-05,Recurring Card Purchase 01/03 Spotify USA 877-7781161 NY Card 3413,-13.22,Subscriptions,2026-08-16
+796,1,2026-01-05,Card Purchase With Pin 01/04 Target T-0942 Chicago IL Card 3413,-26.54,Shopping,2026-08-16
+797,1,2026-01-05,Comcast-Xfinity Cable Svcs PPD ID: 0000213249,-172.83,Rent & Utilities,2026-08-16
+798,1,2026-01-05,Venmo Payment 1047361178128 Web ID: 3264681992,-8,Other,2026-08-16
+799,1,2026-01-06,Card Purchase With Pin 01/06 Target T-0942 Chicago IL Card 3413,-57.84,Shopping,2026-08-16
+800,1,2026-01-07,Card Purchase With Pin 01/07 Target T-0942 Chicago IL Card 3413,-28.51,Shopping,2026-08-16
+801,1,2026-01-08,Card Purchase 01/07 365 Market L 888 432-32 Troy MI Card 3413,-3.4,Other,2026-08-16
+802,1,2026-01-09,Coyote Logis-Osv 0000689029 PPD ID: 00004399,3187.71,Other,2026-08-16
+803,1,2026-01-09,Card Purchase 01/08 365 Market L 888 432-32 Troy MI Card 3413,-1,Other,2026-08-16
+804,1,2026-01-09,"Card Purchase 01/09 Tst* Ludlow Liquors Chicago IL Card 3413 TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail -- 2 of 4 -- 3 4	Page of SM Account Number: not providers or government benefit providers, by using (i) the ACH network, (ii) the Real Time Payment or FedNow network, or (iii) third party services that facilitate payments to your debit card using the Visa or Mastercard network. investments.",-38.86,Dining Takeout,2026-08-16
+805,1,2026-01-12,Venmo Cashout PPD ID: 5264681992,3197.85,Transfer,2026-08-16
+806,1,2026-01-12,Card Purchase 01/08 Emporium Logan Square Chicago IL Card 3413,-16.52,Dining Takeout,2026-08-16
+807,1,2026-01-12,Card Purchase 01/08 Emporium Logan Square Chicago IL Card 3413,-16.52,Dining Takeout,2026-08-16
+808,1,2026-01-12,Card Purchase 01/09 Myopic Books Chicago IL Card 3413,-36.93,Other,2026-08-16
+809,1,2026-01-12,Card Purchase 01/09 Swig Chicago IL Card 3413,-16.42,Other,2026-08-16
+810,1,2026-01-12,Card Purchase 01/09 Barnes & Noble #3484 Chicago IL Card 3413,-20.95,Other,2026-08-16
+811,1,2026-01-12,Subscription Acorns 36Jbx8 Web ID: 9000142694,-3,Investing,2026-08-16
+812,1,2026-01-12,Card Purchase With Pin 01/10 Target T-0942 Chicago IL Card 3413,-46.51,Shopping,2026-08-16
+813,1,2026-01-12,Card Purchase With Pin 01/12 Target T-0942 Chicago IL Card 3413,-61.1,Shopping,2026-08-16
+814,1,2026-01-12,Card Purchase With Pin 01/12 Disney Plus Wilmington De Card 3413,-14.33,Other,2026-08-16
+815,1,2026-01-13,Card Purchase With Pin 01/13 Target T-0942 Chicago IL Card 3413,-36.71,Shopping,2026-08-16
+816,1,2026-01-14,Recurring Card Purchase 01/14 LA Fitness 949-255-8100 CA Card 3413,-39.99,Health & Fitness,2026-08-16
+817,1,2026-01-14,Comed Payments PPD ID: 2360938600,-66.94,Rent & Utilities,2026-08-16
+818,1,2026-01-14,Card Purchase With Pin 01/14 Target T-0942 Chicago IL Card 3413,-29.42,Shopping,2026-08-16
+819,1,2026-01-15,Card Purchase 01/14 365 Market L 888 432-32 Troy MI Card 3413,-3.4,Other,2026-08-16
+820,1,2026-01-15,Check # 7629,-995,Other,2026-08-16
+821,1,2026-01-16,Card Purchase 01/15 365 Market L 888 432-32 Troy MI Card 3413,-3.4,Other,2026-08-16
+822,1,2026-01-16,Recurring Card Purchase 01/16 Scrimba Oslo Card 3413,-30,Other,2026-08-16
+823,1,2026-01-16,Recurring Card Purchase 01/16 Scrimba Oslo Card 3413,-25.35,Other,2026-08-16
+824,1,2026-01-20,Card Purchase 01/15 Amc 2565 N Michiga Naperville IL Card 3413,-28.02,Other,2026-08-16
+825,1,2026-01-20,Card Purchase 01/15 Emporium Logan Square Chicago IL Card 3413,-17.7,Dining Takeout,2026-08-16
+826,1,2026-01-20,Card Purchase 01/17 City Pool Hall Chicago IL Card 3413,-8,Other,2026-08-16
+827,1,2026-01-20,"Card Purchase With Pin 01/18 Target T-0942 Chicago IL Card 3413 A Monthly Service Fee was charged to your Chase Total Checking account. Here are the three ways you can avoid this fee during any statement period. statement) TRANSACTION DETAIL (continued) *start*transaction detail *end*transaction detail *start*post transaction detail message *end*post transaction detail message -- 3 of 4 -- 4 4	Page of IN CASE OF ERRORS OR QUESTIONS ABOUT YOUR ELECTRONIC FUNDS TRANSFERS: For personal accounts only: For business accounts, IN CASE OF ERRORS OR QUESTIONS ABOUT NON-ELECTRONIC FUNDS TRANSFERS JPMorgan Chase Bank, N.A. Member FDIC Account Number: you need more information about a transfer listed on the statement or receipt. We must hear from you no later than 60 days after we sent you the FIRST statement on which the problem or error appeared. Be prepared to give us the following information: Your name and account number; A description of the error or the transaction you are unsure about, and why you think it is an error or want more information; and The amount of the suspected error. We will investigate your complaint and will correct any error promptly. If we take more than 10 business days (or 20 business days for new accounts) to do this, we will provide provisional credit to your account for the amount you think is in error so that you will have use of the money during the time it takes us to complete our investigation. our practice is to follow the procedures described above as detailed in your Deposit Account Agreement or other applicable agreements, but we are not legally required to do so. For example, we require you to notify us no later than 30 days after we sent you the first statement on which the error appeared. We may require you to provide us with a written statement that the disputed transaction was unauthorized. We are also not required to give provisional credit. : Contact us immediately if your statement is incorrect or if you need more information about any non-electronic funds transfers on this statement. For more details, see your Deposit Account Agreement or other applicable agreements that govern your account. *start*dre portrait disclosure message area *end*dre portrait disclosure message area -- 4 of 4 --",-49.25,Shopping,2026-08-16

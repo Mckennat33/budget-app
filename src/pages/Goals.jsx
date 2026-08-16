@@ -210,6 +210,15 @@ export default function Goals({ token }) {
             already paid out before this number.
           </p>
 
+          {data.anchorPartial && (
+            <p className="savings-warning">
+              {data.anchorLabel} only has transactions up to the {data.anchorLastDay}th of{' '}
+              {data.anchorDaysInMonth} days, so these figures are based on a partial month
+              and read low. Upload the rest of that statement period, or pick an earlier
+              full month, for a number you can rely on.
+            </p>
+          )}
+
           <div className="flex-allowance">
             <div className="flex-primary">
               <span className="k">A week</span>

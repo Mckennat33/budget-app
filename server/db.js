@@ -75,6 +75,24 @@ export async function ensureSchema() {
       target_date DATE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+
+    -- One row per upload, so a statement can be removed again along with everything
+    -- it brought in. Transactions uploaded before this existed have a NULL
+    -- statement_id and are removed by month instead.
+    CREATE TABLE IF NOT EXISTS statements (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      filename TEXT NOT NULL,
+      transaction_count INTEGER NOT NULL DEFAULT 0,
+      period_start DATE,
+      period_end DATE,
+      uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`
+    ALTER TABLE transactions
+      ADD COLUMN IF NOT EXISTS statement_id INTEGER REFERENCES statements(id) ON DELETE CASCADE;
   `);
 }
 
