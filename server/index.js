@@ -698,6 +698,17 @@ app.get('/api/overview/debug', async (req, res) => {
 // because the Robinhood/Acorns deposits are automatic - it still counts toward
 // total spend on the overview, it just is not part of the weekly allowance.
 const FIXED_CATEGORIES = new Set(['Rent & Utilities', 'Subscriptions', 'Investing']);
+
+// Loan repayments land in 'Other' but are scheduled commitments, not choices, so they
+// are pulled out into fixed. A credit-card autopay is deliberately NOT here: card
+// purchases never appear in a checking statement, so that payment is the only record
+// of real discretionary spending.
+const LOAN_PATTERN = /student\s+ln|student\s+loan|dept\s+education|navient|nelnet|sallie\s+mae|fedloan|great\s+lakes|loan\s+pmt/i;
+
+// The three categories with genuine week-to-week choice in them. Groceries, transport
+// and health are technically discretionary but not realistically cuttable, so the
+// spending allowance is scoped to these.
+const FLEXIBLE_CATEGORIES = new Set(['Dining Takeout', 'Shopping', 'Other']);
 const SAVINGS_TRANSFER_PATTERN = /transfer\s+to\s+sav/i;
 const MAX_SAVINGS_GOALS = 2;
 
@@ -805,20 +816,27 @@ async function buildGoalsPayload(userId) {
       .reduce((sum, row) => sum + Number(row.amount), 0);
     const rentRow = detectRentRow(spend);
     const fixedByLabel = new Map();
+    const flexibleByCategory = new Map();
     let fixed = 0;
     let discretionary = 0;
+    let flexible = 0;
     const discretionaryRows = [];
 
     for (const row of spend) {
       const amount = Math.abs(Number(row.amount));
       const isRent = rentRow !== null && row.id === rentRow.id;
-      if (isRent || FIXED_CATEGORIES.has(row.category)) {
-        const label = isRent ? 'Rent' : row.category;
+      const isLoan = LOAN_PATTERN.test(row.description || '');
+      if (isRent || isLoan || FIXED_CATEGORIES.has(row.category)) {
+        const label = isRent ? 'Rent' : isLoan ? 'Loans' : row.category;
         fixedByLabel.set(label, (fixedByLabel.get(label) || 0) + amount);
         fixed += amount;
       } else {
         discretionary += amount;
         discretionaryRows.push({ date: row.transaction_date, amount });
+        if (FLEXIBLE_CATEGORIES.has(row.category)) {
+          flexible += amount;
+          flexibleByCategory.set(row.category, (flexibleByCategory.get(row.category) || 0) + amount);
+        }
       }
     }
 
@@ -827,6 +845,8 @@ async function buildGoalsPayload(userId) {
       rent: rentRow,
       fixedTotal: fixed,
       discretionaryTotal: discretionary,
+      flexibleTotal: flexible,
+      flexibleByCategory,
       discretionaryRows,
       fixedBreakdown: [...fixedByLabel.entries()]
         .map(([label, amount]) => ({ label, amount: Number(amount.toFixed(2)) }))
@@ -839,7 +859,10 @@ async function buildGoalsPayload(userId) {
 
   const anchorKey = anchorMonthStart.slice(0, 7);
   const anchorSummary = summaries.get(anchorKey) || summariseMonth([]);
-  const { income: monthIncome, rent, fixedTotal, discretionaryTotal, discretionaryRows, fixedBreakdown } = anchorSummary;
+  const {
+    income: monthIncome, rent, fixedTotal, discretionaryTotal,
+    flexibleTotal, flexibleByCategory, discretionaryRows, fixedBreakdown,
+  } = anchorSummary;
 
   // Transfers no longer drive goal progress, but they are still needed to reconcile
   // income against spending in the month ledger.
@@ -903,6 +926,7 @@ async function buildGoalsPayload(userId) {
       monthsRemaining,
       perMonth,
       perWeek: Number((perMonth / 4.3).toFixed(2)),
+      perDay: Number((perMonth / 30.4).toFixed(2)),
       percentComplete: targetAmount > 0 ? Math.min(100, Math.round((saved / targetAmount) * 100)) : 0,
     };
   });
@@ -910,6 +934,20 @@ async function buildGoalsPayload(userId) {
   const savingsCommitment = savingsGoals.reduce((sum, goal) => sum + goal.perMonth, 0);
   const reductionAmount = Number((discretionaryTotal * (reductionPercent / 100)).toFixed(2));
   const monthlyTarget = Math.max(0, Number((discretionaryTotal - savingsCommitment - reductionAmount).toFixed(2)));
+
+  // The spending allowance is scoped to the three flexible categories. Rather than
+  // budgeting them separately - which would subtract the savings commitment a second
+  // time - it is the share of the monthly target those categories accounted for last
+  // month. One budget, one savings deduction, a narrower number to steer by.
+  const flexibleShare = discretionaryTotal > 0 ? flexibleTotal / discretionaryTotal : 0;
+  const flexibleMonthly = Number((monthlyTarget * flexibleShare).toFixed(2));
+  const flexibleBreakdown = [...flexibleByCategory.entries()]
+    .map(([name, amount]) => ({
+      name,
+      amount: Number(amount.toFixed(2)),
+      percent: flexibleTotal > 0 ? Math.round((amount / flexibleTotal) * 100) : 0,
+    }))
+    .sort((a, b) => b.amount - a.amount);
 
   // Four buckets of whole days, each measured against its own slice of the target
   // so a 10-day final bucket is not judged against a 7-day allowance.
@@ -966,6 +1004,11 @@ async function buildGoalsPayload(userId) {
     monthlyTarget,
     weeklyAllowance: Number((monthlyTarget / 4.3).toFixed(2)),
     dailyAllowance: Number((monthlyTarget / daysInMonth).toFixed(2)),
+    flexibleSpend: Number(flexibleTotal.toFixed(2)),
+    flexibleBreakdown,
+    flexibleMonthly,
+    flexibleWeekly: Number((flexibleMonthly / 4.3).toFixed(2)),
+    flexibleDaily: Number((flexibleMonthly / daysInMonth).toFixed(2)),
     savedPool: Number(savedPool.toFixed(2)),
     savingsGoals,
     scorecard,

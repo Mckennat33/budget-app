@@ -116,6 +116,32 @@ export default function Goals({ token }) {
 
       {error && <div className="overview-error">{error}</div>}
 
+      {/* Everything on this page derives from an uploaded statement, so without one the
+          page would otherwise render as a bare heading with no explanation. */}
+      {data && !data.hasData && (
+        <section className="goals-card goals-empty">
+          <div className="section-title">Nothing to budget yet</div>
+          <p className="goals-help">
+            Your allowance and scorecard are calculated from your bank statements, and
+            none have been uploaded yet. Head to Overview and upload one to get started.
+          </p>
+          <ol className="goals-steps">
+            <li>
+              <b>One statement</b> gives you a spending allowance — a day, week and month
+              figure for dining, shopping and everything in Other.
+            </li>
+            <li>
+              <b>Two statements</b> add goal progress and the weekly scorecard, since both
+              work by comparing a month against the one before it.
+            </li>
+          </ol>
+          <p className="goals-note">
+            You can still add savings goals below — they&rsquo;ll start tracking as soon as
+            there&rsquo;s data to measure.
+          </p>
+        </section>
+      )}
+
       {data?.hasData && (
         <section className="goals-card">
           <div className="section-title">Where the money goes</div>
@@ -154,21 +180,9 @@ export default function Goals({ token }) {
             </tbody>
           </table>
 
-          <div className="allowance-row">
-            <div className="allowance-cell primary">
-              <span className="k">Weekly allowance</span>
-              <span className="v">{currency(data.weeklyAllowance)}</span>
-            </div>
-            <div className="allowance-cell">
-              <span className="k">Daily</span>
-              <span className="v">{currency(data.dailyAllowance)}</span>
-            </div>
-            <div className="allowance-cell">
-              <span className="k">Monthly</span>
-              <span className="v">{currency(data.monthlyTarget)}</span>
-            </div>
-          </div>
-
+          {/* The day/week/month figures live in the allowance section below. Repeating
+              them here on the wider discretionary base gave two different answers to
+              "what can I spend this week", so this card stops at the target. */}
           <form className="goals-form goals-form-inline" onSubmit={saveSettings}>
             <label>
               <span>Aim to spend less by</span>
@@ -184,6 +198,56 @@ export default function Goals({ token }) {
               {saving ? 'Saving...' : 'Apply'}
             </button>
           </form>
+        </section>
+      )}
+
+      {data?.hasData && (
+        <section className="goals-card">
+          <div className="section-title">Your spending allowance</div>
+          <p className="goals-help">
+            Covers dining, shopping and everything in Other — the spending you actually
+            choose week to week. Rent, utilities, loans, subscriptions and investing are
+            already paid out before this number.
+          </p>
+
+          <div className="flex-allowance">
+            <div className="flex-primary">
+              <span className="k">A week</span>
+              <span className="v">{currency(data.flexibleWeekly)}</span>
+            </div>
+            <div className="flex-side">
+              <div className="flex-cell">
+                <span className="k">A day</span>
+                <span className="v">{currency(data.flexibleDaily)}</span>
+              </div>
+              <div className="flex-cell">
+                <span className="k">A month</span>
+                <span className="v">{currency(data.flexibleMonthly)}</span>
+              </div>
+            </div>
+          </div>
+
+          {data.flexibleBreakdown.length > 0 ? (
+            <>
+              <p className="goals-note">
+                In {data.anchorLabel} these three came to {currency(data.flexibleSpend)}:
+              </p>
+              <div className="flex-split">
+                {data.flexibleBreakdown.map((item) => (
+                  <div key={item.name} className="flex-split-row">
+                    <span className="name">{item.name}</span>
+                    <span className="bar">
+                      <span className="bar-fill" style={{ width: `${item.percent}%` }} />
+                    </span>
+                    <span className="amt">{currency(item.amount)}</span>
+                    <span className="pct">{item.percent}%</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="goals-note">No dining, shopping or other spending in {data.anchorLabel}.</p>
+          )}
         </section>
       )}
 
@@ -267,8 +331,9 @@ export default function Goals({ token }) {
 
               {goal.monthsRemaining ? (
                 <div className="savings-rates">
-                  <span><b>{currency(goal.perMonth)}</b> per month</span>
-                  <span><b>{currency(goal.perWeek)}</b> per week</span>
+                  <span><b>{currency(goal.perDay)}</b> a day</span>
+                  <span><b>{currency(goal.perWeek)}</b> a week</span>
+                  <span><b>{currency(goal.perMonth)}</b> a month</span>
                   <span>{goal.percentComplete}% complete</span>
                 </div>
               ) : (

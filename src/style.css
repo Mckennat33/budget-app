@@ -847,3 +847,127 @@ header p {
 .goals-ledger td.num.negative {
   color: #b91c1c;
 }
+
+.flex-allowance {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) 2fr;
+  gap: 12px;
+}
+
+.flex-primary {
+  background: #111827;
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: grid;
+  gap: 4px;
+  align-content: center;
+}
+
+.flex-primary .k {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.flex-primary .v {
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.flex-side {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.flex-cell {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px 18px;
+  background: #f9fafb;
+  display: grid;
+  gap: 4px;
+  align-content: center;
+}
+
+.flex-cell .k {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.flex-cell .v {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+}
+
+.flex-split {
+  display: grid;
+  gap: 10px;
+}
+
+.flex-split-row {
+  display: grid;
+  grid-template-columns: minmax(110px, auto) 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.flex-split-row .name {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.92rem;
+}
+
+.flex-split-row .bar {
+  height: 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+  min-width: 40px;
+}
+
+.flex-split-row .bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #2563eb;
+}
+
+.flex-split-row .amt {
+  font-weight: 700;
+  color: #111827;
+  font-size: 0.92rem;
+}
+
+.flex-split-row .pct {
+  color: #6b7280;
+  font-size: 0.85rem;
+  min-width: 38px;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .flex-allowance { grid-template-columns: 1fr; }
+}
+
+.goals-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  color: #4b5563;
+  font-size: 0.94rem;
+}
+
+.goals-steps b {
+  color: #111827;
+}
