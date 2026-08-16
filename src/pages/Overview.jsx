@@ -323,39 +323,6 @@ export default function Overview({ token }) {
         </article>
       </section>
 
-      {statements.length > 0 && (
-        <section className="overview-categories">
-          <div className="section-title">Uploaded statements</div>
-          <p className="statement-help">
-            Removing a statement deletes the transactions it brought in.
-          </p>
-          <div className="statement-list">
-            {statements.map((entry) => (
-              <div key={`${entry.kind}-${entry.id}`} className="statement-row">
-                <div className="statement-info">
-                  <span className="statement-label">{entry.label}</span>
-                  <span className="statement-meta">
-                    {entry.transactionCount} transactions
-                    {entry.periodStart && entry.periodEnd && (
-                      <> · {entry.periodStart} to {entry.periodEnd}</>
-                    )}
-                    {entry.kind === 'month' && <> · uploaded before statement tracking</>}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="statement-remove"
-                  onClick={() => removeStatement(entry)}
-                  disabled={removing === entry.id}
-                >
-                  {removing === entry.id ? 'Removing...' : 'Remove'}
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       <section className="overview-categories">
         <div className="section-title">Top categories</div>
         <div className="category-list">
@@ -428,6 +395,39 @@ export default function Overview({ token }) {
           })}
         </div>
       </section>
+
+      {statements.length > 0 && (
+        <section className="overview-categories">
+          <div className="section-title">Uploaded statements</div>
+          <p className="statement-help">
+            Removing a statement deletes the transactions it brought in.
+          </p>
+          <div className="statement-list">
+            {statements.map((entry) => (
+              <div key={`${entry.kind}-${entry.id}`} className="statement-row">
+                <div className="statement-info">
+                  <span className="statement-label">{entry.label}</span>
+                  <span className="statement-meta">
+                    {entry.transactionCount} transactions
+                    {entry.periodStart && entry.periodEnd && (
+                      <> · {entry.periodStart} to {entry.periodEnd}</>
+                    )}
+                    {entry.kind === 'month' && <> · uploaded before statement tracking</>}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="statement-remove"
+                  onClick={() => removeStatement(entry)}
+                  disabled={removing === entry.id}
+                >
+                  {removing === entry.id ? 'Removing...' : 'Remove'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
     }
